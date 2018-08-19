@@ -1,0 +1,112 @@
+
+* revers engineering from windows driver
+* use C++ for write freebsd driver
+
+Project discontinue since 2008 year
+https://www.freshports.org/net/ttbudget
+
+------------------------------
+currently supported only TechoTrend Budget S1401 PCI device
+
+ load driver
+#kldload ./ttbudget.ko
+
+#dmesg
+
+ttbudget0: <TechnoTrend budget DVB S-1401 PCI adapter> mem 0xfa110000-0xfa1101ff irq 18 at device 2..0 on pci5
+ttbudget0: [GIANT-LOCKED]
+ttbudget0: [ITHREAD]
+MAC address : 00:d0:5c:xx:xx:xx
+dvb0: using obsoleted if_watchdog interface
+dvb0: Ethernet address: 00:d0:5c:xx:xx:xx
+
+
+ view satellite config by number
+#./dvbconfig -c channels.conf -l
+
+ tune to satellite by number (as example number 1)
+#./dvbconfig dvb0 -c channels.conf -n1
+after this command
+within 1-2 seconds need command to lock signal #./dvbconfig dvb0
+
+ view tuners param and status
+#./dvbconfig dvb0
+
+something like this
+
+dvb0: flags=<DMA:STOP>
+        MAC: 00:d0:5c:xx:xx:xx
+        LNB: 0 <Polar:Hor, LOF:9750 MHz, 22KHz:off>
+        Tuner: <Freq:11481 MHz, SR:41250 kS/s, FEC:3/4>
+        Signal: 84% [##########################################........]
+        BER: 1.611232e+05
+        Status: lock signal carrier viterbi sync
+
+        Demux: TSPkts 0, BadTSPkts 0, DisCont 0
+
+ start dma
+#ifconfig dvb0 up
+
+ view to satellite stream
+#./dvbconfig dvb0
+  the TSPkts > BadTSPkts should be!!
+
+dvb0: flags=<DMA:START>
+        MAC: 00:d0:5c:xx:xx:xx
+        LNB: 0 <Polar:Hor, LOF:9750 MHz, 22KHz:off>
+        Tuner: <Freq:11481 MHz, SR:41250 kS/s, FEC:3/4>
+        Signal: 84% [##########################################........]
+        BER: 1.611232e+05
+        Status: lock signal carrier viterbi sync
+
+	Demux: TSPkts 1'841'664, BadTSPkts 1'685'817, DisCont 0
+
+ if TSPkts ~= BadTSPkts retune!
+#./dvbconfig dvb0 -c channels.conf -n1
+within 2-3 sec
+#./dvbconfig dvb0
+
+
+ if TSPkts > BadTSPkts
+ add pid & mac
+#./dvbconfig dvb0 -p 100 -mp 01:02:03:04:05:06
+or
+#./dvbconfig dvb0 -p 100 -mu 01:02:03:04:05:06
+ pid may be dec (100) or hex (0x64)
+ mac may be format xx:xx:xx:xx:xx:xx or xxxxxxxxxxxx
+ -mp add mac promisc
+ -mu add mac unicast
+
+ view by pid statistic
+#./dvbconfig dvb0
+
+dvb0: flags=<DMA:START>
+        MAC: 00:d0:5c:xx:xx:xx
+        LNB: 0 <Polar:Hor, LOF:9750 MHz, 22KHz:off>
+        Tuner: <Freq:11481 MHz, SR:41250 kS/s, FEC:3/4>
+        Signal: 84% [##########################################........]
+        BER: 0.000000e+00
+        Status: lock signal carrier viterbi sync
+
+	Demux: TSPkts 1'841'664, BadTSPkts 1'685'817, DisCont 0
+        ---------------------------------------------------------------
+        |N |   Pid:|Type:|              MAC:|      Bytes:|     Errors:|
+        ---------------------------------------------------------------
+        |1 | 0x0064|   UN| xx:xx:xx:xx:xx:xx|   5'487'543|           0|
+
+
+ you can enable debug by dvb0 interface
+ to view MAC ... IP  info's
+#ifconfig dvb0 debug
+
+
+ to disable dvb0 debug
+#ifconfig dvb0 -debug
+
+ to reset TS statistic
+#ifconfig dvb0 down
+#ifconfig dvb0 up
+
+ to delete pid
+ use N number
+#./dvbconfig dvb0 -d 1
