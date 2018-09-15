@@ -65,19 +65,19 @@ public:
 	{
 		tTimeOut    timeout;	// timeout value
 		tSwapMode   endian;	// Swap mode of interface
-		BOOL        increment;	// Enable address increment 
+		int        increment;	// Enable address increment 
 					// for block xfer 
 					// (Default = TRUE)
 		tSlave      iface;	// Intel or Motorola interface
-		BOOL        bSlave16;	// If TRUE slave can be 
+		int        bSlave16;	// If TRUE slave can be 
 					// accessed in 16 bit
 // The following three entries are for SAA7146A only and must be set 
 // to FALSE otherwise!!!
-		BOOL        bFast;	// Enable FAST mode 
+		int        bFast;	// Enable FAST mode 
 					// (short Trwi time)
-		BOOL        bXIrq;	// Use GPIO3 as external DEBI 
+		int        bXIrq;	// Use GPIO3 as external DEBI 
 					// Irq
-		BOOL        bXResume;	// Resume block transfer when 
+		int        bXResume;	// Resume block transfer when 
 					// XIrq was deasserted.
 	};
 
