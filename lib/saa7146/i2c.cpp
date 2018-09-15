@@ -68,7 +68,9 @@ void CSpciI2C::SetSlave(int slave)
 
 int CSpciI2C::GetErrNo(void)
 {
-	return m_nErrNo;
+	int ret = m_nErrNo;
+	m_nErrNo = 0;
+	return ret;
 }
 
 void CSpciI2C::SetIICTRF(int cData, unsigned char cAttr, unsigned char cPosition)
@@ -375,20 +377,148 @@ int CSpciI2C::CombinedSeq(int seqWr[], int lenWr, int seqRd[], int lenRd)
 
 void CSpciI2C::Stop(void)
 {
+#if 0
+	switch(m_peState)
+	{
+	case 0:	//IDLE
+		break;
+	case 3: //COUNT
+		unsigned char idx = 8 - (m_nIdx*2);
+		m_dwIICTRF &= ~(3 << val & 0xFF);
+		m_dwIICTRF |= (1 << val & 0xFF);
+		FlushIICTRF();
+		CheckIICSTATE();
+	case 4: //END_READ
+		m_peState = 0; //IDLE
+		break;
+	default:
+		m_nErrNo++;
+		m_peState = 0; //IDLE
+	}
+#endif
 }
 
 int CSpciI2C::StartR(void)
 {
+#if 0
+	int res;
+	switch(m_peState)
+	{
+	case 0: //IDLE
+		ClearIICTRF();
+	case 3: //COUNT
+		int slave = (m_dwSlave << 1)|1;
+		AddIICTRF(&slave, START_ATTR, 0);
+		FlushIICTRF();
+		if (CheckIICSTATE())
+		{
+			m_peState = 2; //RD_S
+			res = 0;
+		} else
+		{
+			m_peState = 0; //IDLE
+			res = -1;
+		}
+	default:
+		m_nErrNo++;
+		m_peState = 0; //IDLE
+		res = -1;
+	}
+	return res;
+#endif
 }
 
 int CSpciI2C::StartW(void)
 {
+#if 0
+	int res;
+	switch(m_peState)
+	{
+	case 0: //IDLE
+		int slave = (m_dwSlave << 1);
+		ClearIICTRF();
+		AddIICTRF(&slave, START_ATTR, 0);
+		m_peState = 1; //WR_S
+		res = 0;
+		break;
+	default:
+		m_peState = 0; //IDLE
+		m_nErrNo++;
+		res = -1;
+	}
+
+	return res;
+#endif
 }
 
 int CSpciI2C::WriteByte(int byte)
 {
+#if 0
+	int res;
+	switch(m_peState)
+	{
+	case 1: //WR_S
+		m_peState = 3; //CONT
+	case 3:
+		if (m_nIdx == 3) //??? 0
+		{
+			FlushIICTRF();
+
+			if (!CheckIICSTATE())
+			{
+				m_peState = 0; //IDLE
+				res = -1;
+				break;
+			}
+
+			ClearIICTRF();
+		} 
+
+		SetIICTRF(byte, CONT_ATTR, m_nIdx++);
+		res = 0;
+		break;
+	default:
+		m_peState = 0; //IDLE
+		m_nErrNo++;
+		res = -1;
+	}
+	return res;
+#endif
 }
 
 int CSpciI2C::ReadByte(int ack)
 {
+#if 0
+	int res;
+	switch(m_peState)
+	{
+	case 2: //RD_S
+		ClearIICTRF();
+		if (ack == -1)
+		{
+			SetIICTRF(0, STOP_ATTR, 0);
+			m_peState = 4; //END_READ
+		} else
+		{
+			SetIICTRF(0, CONT_ATTR, 0);
+		}
+
+		FlushIICTRF();
+
+		if (CheckIICSTATE())
+		{
+			res = (m_dwIICTRF >> 24);
+		} else
+		{
+			m_peState = 0; //IDLE
+			res = -1;
+		}
+		break;
+	deafult:
+		m_nErrNo++;
+		m_peState = 0; //IDLE
+		res = -1;
+	}
+	return res;
+#endif
 }

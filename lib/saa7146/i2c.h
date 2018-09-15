@@ -117,7 +117,7 @@ public:
 
     enum
     {
-        none    =-1
+        none =-1
     };
 
 };
