@@ -27,7 +27,7 @@ CSpciIoIrq::CSpciIoIrq(struct resource *memory):memory(memory)
 
 CSpciIoIrq::~CSpciIoIrq()
 {
-	SetReg(0xDC, 0, 0);
+	SetReg(IER, 0, 0);
 }
 
 void CSpciIoIrq::Init(void)
@@ -39,15 +39,15 @@ void CSpciIoIrq::Init(void)
 	isrTableSize = 0;
 	bzero(&isrTableEntry[0], sizeof(isrTableEntry));
 
-	SetReg(0xDC, 0, 0);
+	SetReg(IER, 0, 0);
 }
 
 void CSpciIoIrq::DeviceReset(void)
 {
-	SetReg(0xFC, 0x80000000, 1);
+	SetReg(MC1, 0x80000000, 1);
 }
 
-unsigned int CSpciIoIrq::GetUploadMask(int reg)
+unsigned int CSpciIoIrq::GetUploadMask(int nReg)
 {
 	static unsigned int dwUpMaskTable[40] =
 		{
@@ -110,9 +110,9 @@ unsigned int CSpciIoIrq::GetUploadMask(int reg)
 	
 		};
 
-	if (reg <= 0x90)
+	if (nReg <= 0x90)
 	{
-		switch (reg)
+		switch (nReg)
 		{
 		/* DDI */
 		case 0x3A:	return 0x2000200;	/* UPLD_D1_A 200 10bit */
@@ -124,23 +124,23 @@ unsigned int CSpciIoIrq::GetUploadMask(int reg)
 		case 0x47:	return 0x80008;		/* DMA 12-8 */
 		case 0x48:	return 0x40004;		/* DMA 4-0 */
 
-		default:	return dwUpMaskTable[reg>>2];
+		default:	return dwUpMaskTable[nReg>>2];
 		}
 	}
 	return 0;
 }
 
-void CSpciIoIrq::UploadRegs(unsigned int mask)
+void CSpciIoIrq::UploadRegs(unsigned int dwMask)
 {
-	SetReg(0x100, mask, 0);
+	SetReg(MC2, dwMask, 0);
 }
 
-unsigned int CSpciIoIrq::GetReg(int reg)
+unsigned int CSpciIoIrq::GetReg(int nReg)
 {
 	unsigned int value;
 
 	value = 0;
-	if (reg >= 0x200)
+	if (nReg >= 0x200)
 	{
 		/*
 		TODO
@@ -148,24 +148,24 @@ unsigned int CSpciIoIrq::GetReg(int reg)
 		return 0;
 	}
 
-	if (reg >= 0x48 && reg <= 0x4B)
+	if (nReg >= 0x48 && nReg <= 0x4B)
 	{
-		value = read_reg_uchar(memory, reg) & 0xff;
+		value = read_reg_uchar(memory, nReg) & 0xff;
 	} else
-	if (reg == 0x54 || reg == 0x56)
+	if (nReg == 0x54 || nReg == 0x56)
 	{
-		value = read_reg_ushort(memory, reg) & 0xffff;
+		value = read_reg_ushort(memory, nReg) & 0xffff;
 	} else
 	{
-		value = read_reg_ulong(memory, reg);
+		value = read_reg_ulong(memory, nReg);
 	}
 
 	return value;
 }
 
-void CSpciIoIrq::SetReg(int reg, unsigned int value, int upload)
+void CSpciIoIrq::SetReg(int nReg, unsigned int dwValue, int bUpload)
 {
-	if (reg >= 0x200)
+	if (nReg >= 0x200)
 	{
 		/*
 		TODO
@@ -173,25 +173,25 @@ void CSpciIoIrq::SetReg(int reg, unsigned int value, int upload)
 		return;
 	}
 
-	if (reg >= 0x48 && reg <= 0x4B)
+	if (nReg >= 0x48 && nReg <= 0x4B)
 	{
-		write_reg_uchar(memory, reg, value & 0xff);
+		write_reg_uchar(memory, nReg, dwValue & 0xff);
 	} else
-	if (reg == 0x54 || reg == 0x56)
+	if (nReg == 0x54 || nReg == 0x56)
 	{
-		write_reg_ushort(memory, reg, value & 0xffff);
+		write_reg_ushort(memory, nReg, dwValue & 0xffff);
 	} else
 	{
-		write_reg_ulong(memory, reg, value);
+		write_reg_ulong(memory, nReg, dwValue);
 	}
 
-	if (upload)
+	if (bUpload)
 	{
-		unsigned int mask;
+		unsigned int dwMask;
 
-		mask = GetUploadMask(reg);
-		if (mask)
-			UploadRegs(mask);
+		dwMask = GetUploadMask(nReg);
+		if (dwMask)
+			UploadRegs(dwMask);
 	}
 }
 
@@ -234,10 +234,10 @@ void CSpciIoIrq::SetGPIO(int gpioPin, int gpioMode)
 	if (gpioPin > 3)
 		return;
 
-	value = GetReg(0xE0);
+	value = GetReg(GPIO_CTRL);
 	value &= ~(0xFF << (8 * gpioPin));
 	value |= (gpioMode << (8 * gpioPin));
-	SetReg(0xE0, value, 1);
+	SetReg(GPIO_CTRL, value, 1);
 }
 
 int CSpciIoIrq::GetGPIO(int gpioPin)
@@ -245,7 +245,7 @@ int CSpciIoIrq::GetGPIO(int gpioPin)
 	if (gpioPin > 3)
 		return 0;
 
-	return (GetReg(0x110) >> (gpioPin+3) ) & 1;
+	return (GetReg(PSR) >> (gpioPin+3) ) & 1;
 }
 
 /* Irq */
@@ -253,8 +253,8 @@ int CSpciIoIrq::GetGPIO(int gpioPin)
 unsigned int CSpciIoIrq::EnableIrq(unsigned int irqtype)
 {
 	irq |= irqtype;
-	SetReg(0x10C, ~GetReg(0xDC) & irqtype, 1);
-	SetReg(0xDC, GetReg(0xDC) | irq, 1);
+	SetReg(ISR, ~GetReg(IER) & irqtype, 1);
+	SetReg(IER, GetReg(IER) | irq, 1);
 	return irq;
 }
 
@@ -264,8 +264,8 @@ unsigned int CSpciIoIrq::DisableIrq(unsigned int irqtype)
 
 	tmpirq = irq;
 	irq = ~irqtype & irq;
-	SetReg(0x10C, tmpirq & irqtype, 1);
-	SetReg(0xDC, (GetReg(0xDC) & ~tmpirq) | irq, 1);
+	SetReg(ISR, tmpirq & irqtype, 1);
+	SetReg(IER, (GetReg(IER) & ~tmpirq) | irq, 1);
 	return tmpirq;
 }
 
@@ -430,12 +430,12 @@ int CSpciIoIrq::OnHardwareInt(void)
 	unsigned int irqtype;
 	unsigned int irqmask;
 
-	irqtype = GetReg(0x10C);
+	irqtype = GetReg(ISR);
 	irqmask = CallRing0Isrs(irqtype);
 
 	if (irqmask != 0)
 	{
-		SetReg(0x10C, irqtype & irqmask, 1);
+		SetReg(ISR, irqtype & irqmask, 1);
 		return 1;
 	}
 	return 0;

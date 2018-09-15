@@ -321,7 +321,8 @@ void CDvbAdapter::TSCallback(unsigned char filterType, unsigned char filterNo, u
 	unsigned short seclen;
 	unsigned short datalen;
 
-	if (filterType == MPE_SECTION_FILTER || filterType == MULTI_MPE_FILTER)
+	if (filterType == MPE_SECTION_FILTER ||
+	    filterType == MULTI_MPE_FILTER)
 	{
 		seclen = sec_length(data);
 
@@ -491,7 +492,7 @@ int CDvbAdapter::HWEnableDataDMA(void)
 
 	DataISR = pci->RegisterRing0Isr(0x80, this, 2);
 
-	pci->SetReg(0xFC, 0x4100410, 1);
+	pci->SetReg(MC1, 0x4100410, 1);
 
 	printf("start DMA\n");
 	return 0;
@@ -499,7 +500,7 @@ int CDvbAdapter::HWEnableDataDMA(void)
 
 int CDvbAdapter::HWDisableDataDMA(void)
 {
-	pci->SetReg(0xFC, 0x100000, 1);
+	pci->SetReg(MC1, 0x100000, 1);
 
 	pci->UnregisterIsr(DataISR);
 	DataISR = 0;
@@ -670,25 +671,26 @@ void CDvbAdapter::HWInit7146Register(int ci)
 
 	pbuffer = dma.pbuffer;
 
-	pci->SetReg(0xFC, 0x100000, 1);
+	pci->SetReg(MC1, 0x100000, 1);
 
 //	pci->SetGPIO(2, 0x40);
 //	DELAY(100);
 //	pci->SetGPIO(2, 0x50);
 
-	pci->SetReg(0x30, pbuffer, 1);			//BASE_ODD3
-	pci->SetReg(0x34, pbuffer+(188*512), 1);	//BASE_EVEN3
-	pci->SetReg(0x38, pbuffer+(188*512)*2, 1);	//PROT_ADDR3
-	pci->SetReg(0x3C, 188, 1);			//PITCH3
-	pci->SetReg(0x40, 0, 1);			//BASE_PAGE3
-	pci->SetReg(0x44, (512 << 16) | 188, 1);	//NUM_LINE_BYTE3
-	pci->SetReg(0x50, 0x6C006C0, 1);		//DD1_INIT
-	pci->SetReg(0x56, 0, 1);			//DD1_STREAM_A
-	pci->SetReg(0x54, 0, 1);			//DD1_STREAM_B
+	pci->SetReg(BASE_ODD3, pbuffer, 1);
+	pci->SetReg(BASE_EVEN3, pbuffer+(188*512), 1);
+	pci->SetReg(PROT_ADDR3, pbuffer+(188*512)*2, 1);
+	pci->SetReg(PITCH3, 188, 1);
+	pci->SetReg(BASE_PAGE3, 0, 1);
+	pci->SetReg(NUM_LINE_BYTE3, (512 << 16) | 188, 1);
 
-	pci->SetReg(0x58, 0x60000000, 1);		//BSR
+	pci->SetReg(DD1_INIT, 0x6C006C0, 1);
+	pci->SetReg(DD1_STREAM_A, 0, 1);
+	pci->SetReg(DD1_STREAM_B, 0, 1);
 
-	pci->SetReg(0x100, 0x7100710, 1);		//MC2
+	pci->SetReg(BRS_CTRL, 0x60000000, 1);
+
+	pci->SetReg(MC2, 0x7100710, 1);
 }
 
 int CDvbAdapter::HWDeInitialize(int level)
