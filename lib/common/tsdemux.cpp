@@ -25,11 +25,11 @@ CTSDemux::CTSDemux(CAdapter *sc):sc(sc)
 
 	bzero(&Pid2Chan[0], sizeof(Pid2Chan));
 
-	for (i = 0; i < 256; i++)
+	for (i = 0; i < CHANNELS; i++)
 	{
 		channel = &Channels[i];
 
-		channel->ftype = 0;
+		channel->ftype = NO_FILTER_TYPE;
 		channel->pid = 0xffff;
 		channel->filter.no = 0;
 		channel->state = 0;
@@ -48,7 +48,7 @@ CTSDemux::CTSDemux(CAdapter *sc):sc(sc)
 		channel->unkn4A = 0xffff;
 	}
 
-	for (i = 0; i < 256; i++)
+	for (i = 0; i < FILTERS; i++)
 	{
 		filter = &Filters[i];
 
@@ -76,8 +76,7 @@ CTSDemux::~CTSDemux()
 	DelAllFilters();
 }
 
-void
-CTSDemux::ResetStat(void)
+void CTSDemux::ResetStat(void)
 {
 	TSPkts = 0;
 	BadTSPkts = 0;
@@ -86,36 +85,31 @@ CTSDemux::ResetStat(void)
 
 }
 
-unsigned int
-CTSDemux::GetTSPkts(void)
+unsigned int CTSDemux::GetTSPkts(void)
 {
 	return TSPkts;
 }
 
-unsigned int
-CTSDemux::GetBadTSPkts(void)
+unsigned int CTSDemux::GetBadTSPkts(void)
 {
 	return BadTSPkts;
 }
 
-unsigned int
-CTSDemux::GetTSErrors(void)
+unsigned int CTSDemux::GetTSErrors(void)
 {
 	return TSErrors;
 }
 
-unsigned int
-CTSDemux::GetDisCont(void)
+unsigned int CTSDemux::GetDisCont(void)
 {
 	return DisCont;
 }
 
-unsigned char
-CTSDemux::GetFreeFilter(void)
+unsigned char CTSDemux::GetFreeFilter(void)
 {
 	unsigned int	filterNo;
 
-	for (filterNo = 1; filterNo < 256; filterNo++)
+	for (filterNo = 1; filterNo < FILTERS; filterNo++)
 	{
 		if (Filters[filterNo].chanNo == 0)
 			break;
@@ -123,32 +117,30 @@ CTSDemux::GetFreeFilter(void)
 	return filterNo;
 }
 
-unsigned char
-CTSDemux::GetFreeChannel(void)
+unsigned char CTSDemux::GetFreeChannel(void)
 {
 	unsigned int	chanNo;
 
-	for (chanNo = 1; chanNo < 256; chanNo++)
+	for (chanNo = 1; chanNo < CHANNELS; chanNo++)
 	{
-		if (Channels[chanNo].ftype == 0)
+		if (Channels[chanNo].ftype == NO_FILTER_TYPE)
 			break;
 	}
 	return chanNo;
 }
 
-unsigned int
-CTSDemux::GetScrambleFlags(unsigned char filterNo)
+unsigned int CTSDemux::GetScrambleFlags(unsigned char filterNo)
 {
 	CHANNEL	*channel;
 	unsigned char chanNo;
 	unsigned int scrambl;
 
-	if (filterNo == 0 || filterNo >= 256)
+	if (filterNo == 0 || filterNo >= FILTERS)
 		return 0;
 
 	chanNo = Filters[filterNo].chanNo;
 
-	if (chanNo == 0 || chanNo >= 256)
+	if (chanNo == 0 || chanNo >= CHANNELS)
 		return 0;
 
 	channel = &Channels[chanNo];
@@ -158,30 +150,27 @@ CTSDemux::GetScrambleFlags(unsigned char filterNo)
 	return (scrambl << 8) | Filters[filterNo].scrambl;
 }
 
-unsigned short
-CTSDemux::GetPid(unsigned char filterNo)
+unsigned short CTSDemux::GetPid(unsigned char filterNo)
 {
-	if (filterNo == 0 || filterNo >= 256)
+	if (filterNo == 0 || filterNo >= FILTERS)
 		return 0;
 
 	return Filters[filterNo].pid;
 }
 
-u_int64_t
-CTSDemux::GetBytes(unsigned char filterNo)
+u_int64_t CTSDemux::GetBytes(unsigned char filterNo)
 {
-	if (filterNo == 0 || filterNo >= 256)
+	if (filterNo == 0 || filterNo >= FILTERS)
 		return 0;
 
 	return Filters[filterNo].bytes;
 }
 
-unsigned int 
-CTSDemux::GetErrors(unsigned char filterNo)
+unsigned int CTSDemux::GetErrors(unsigned char filterNo)
 {
 	unsigned short pid;
 
-	if (filterNo == 0 || filterNo >= 256)
+	if (filterNo == 0 || filterNo >= FILTERS)
 		return 0;
 
 	pid = Filters[filterNo].pid;
@@ -195,12 +184,11 @@ CTSDemux::GetErrors(unsigned char filterNo)
 	return Pids->Errors[pid];
 }
 
-unsigned int
-CTSDemux::GetCounts(unsigned char filterNo)
+unsigned int CTSDemux::GetCounts(unsigned char filterNo)
 {
 	unsigned short pid;
 
-	if (filterNo == 0 || filterNo >= 256)
+	if (filterNo == 0 || filterNo >= FILTERS)
 		return 0;
 
 	pid = Filters[filterNo].pid;
@@ -214,8 +202,7 @@ CTSDemux::GetCounts(unsigned char filterNo)
 	return Pids->Counts[pid];
 }
 
-enum TSErrReturn
-CTSDemux::EnablePIDCount(int enable)
+enum TSErrReturn CTSDemux::EnablePIDCount(int enable)
 {
 	PIDCOUNT	*tmp;
 	int i;
@@ -256,8 +243,7 @@ CTSDemux::EnablePIDCount(int enable)
 	return TSOK;
 }
 
-enum TSErrReturn
-CTSDemux::AddFilter(unsigned char &fNo, enum FILTERTYPE ftype, unsigned short pid, unsigned char *mac, unsigned char *mask, unsigned int size)
+enum TSErrReturn CTSDemux::AddFilter(unsigned char &fNo, enum FILTERTYPE ftype, unsigned short pid, unsigned char *mac, unsigned char *mask, unsigned int size)
 {
 	CHANNEL		*channel;
 	FILTER		*filter;
@@ -288,7 +274,7 @@ CTSDemux::AddFilter(unsigned char &fNo, enum FILTERTYPE ftype, unsigned short pi
 
 	pChanNo = &Pid2Chan[pid];
 
-	if (*pChanNo != 0 && ftype != PID9)
+	if (*pChanNo != 0 && ftype != TS_FILTER)
 	{
 		chanNo = *pChanNo;
 	} else
@@ -303,18 +289,73 @@ CTSDemux::AddFilter(unsigned char &fNo, enum FILTERTYPE ftype, unsigned short pi
 
 	switch(ftype)
 	{
-	case ES1:
-	case PIPE2:
-	case PES3:
-	case ES4:
-	case PID7: {
+	case STREAMING_FILTER:
+	case PIPING_FILTER:
+	case PES_FILTER:
+	case ES_FILTER:
+	case PID_FILTER: {
+#if 0
+			if (*pChanNo != 0)
+			{
+				return ERROR4;
+			}
 
+			buffer = new unsigned char[size];
+			if (buffer == NULL)
+			{
+				return TSNOMEM;
+			}
+
+			channel = &Channels[ chanNo ];
+
+			channel->ftype = ftype;
+			channel->pid = pid;
+			channel->filter.no = filterNo;	//?
+
+			switch(ftype)
+			{
+			case STREAMING_FILTER:
+			case ES_FILTER:
+				channel->state = 6;
+				break;
+
+			case PES_FILTER:
+				channel->state = 1;
+				break;
+
+			default:
+				channel->state = 0;
+			}
+
+			channel->flag = 0;
+			channel->seclen = 0;
+
+			channel->len = 0;
+			channel->basebuf = buffer;
+			channel->baselen = size;
+			channel->buf = buffer;
+			channel->unkn24 = buffer;
+
+			channel->unkn48 = 0;
+			channel->unkn49 = 0;
+				
+			filter = &Filters[ filterNo ];
+
+			filter->macfilter = 0;
+
+			filter->chanNo = chanNo;
+			filter->scrambl = 0;
+			filter->pid = pid;
+			filter->bytes = 0;
+
+			*pChanNo = chanNo;
+#endif
 
 		} break;
 
-	case SEC5:
-	case SEC6:
-	case SEC10: {
+	case SECTION_FILTER:
+	case MPE_SECTION_FILTER:
+	case MULTI_MPE_FILTER: {
 			if (mac == NULL || mask == NULL)
 			{
 				return TSEINVAL;	//ERROR1;
@@ -328,7 +369,7 @@ CTSDemux::AddFilter(unsigned char &fNo, enum FILTERTYPE ftype, unsigned short pi
 
 			if (*pChanNo == 0)
 			{
-				if (ftype == SEC10)
+				if (ftype == MULTI_MPE_FILTER)
 				{
 					return ERROR6;
 				}
@@ -405,7 +446,7 @@ CTSDemux::AddFilter(unsigned char &fNo, enum FILTERTYPE ftype, unsigned short pi
 			}
 		} break;
 
-	case PID9: {
+	case TS_FILTER: {
 			if (Pid2Chan[8192] != 0)
 			{
 				return ERROR4;
@@ -459,14 +500,13 @@ CTSDemux::AddFilter(unsigned char &fNo, enum FILTERTYPE ftype, unsigned short pi
 	return TSOK;
 }
 
-enum TSErrReturn
-CTSDemux::DeleteFilter(unsigned char filterNo)
+enum TSErrReturn CTSDemux::DeleteFilter(unsigned char filterNo)
 {
 	unsigned char	chanNo;
 	unsigned short	pid;
 	int i;
 
-	if (filterNo == 0 || filterNo >= 256)
+	if (filterNo == 0 || filterNo >= FILTERS)
 		return ERROR3;
 
 	chanNo = Filters[ filterNo ].chanNo;
@@ -478,15 +518,15 @@ CTSDemux::DeleteFilter(unsigned char filterNo)
 	Filters[ filterNo ].pid = 0xffff;
 	pid = Channels[ chanNo ].pid;
 
-	for(i = 1; i < 256; i++)
+	for(i = 1; i < FILTERS; i++)
 	{
 		if (Filters[i].pid == pid)
 			break;
 	}
 
-	if (i == 256 && Channels[ chanNo ].ftype != SEC10)
+	if (i == FILTERS && Channels[ chanNo ].ftype != MULTI_MPE_FILTER)
 	{
-		if (Channels[ chanNo ].ftype == PID8)
+		if (Channels[ chanNo ].ftype == MULTI_PID_FILTER)
 		{
 			for (i = 0; i < 8192; i++)
 			{
@@ -494,7 +534,7 @@ CTSDemux::DeleteFilter(unsigned char filterNo)
 					Pid2Chan[i] = 0;
 			}
 		} else
-		if (Channels[ chanNo ].ftype == PID9)
+		if (Channels[ chanNo ].ftype == TS_FILTER)
 		{
 			Pid2Chan[8192] = 0;
 		} else
@@ -510,14 +550,13 @@ CTSDemux::DeleteFilter(unsigned char filterNo)
 	return TSOK;
 }
 
-void
-CTSDemux::DelAllFilters(void)
+void CTSDemux::DelAllFilters(void)
 {
 	FILTER	*filter;
 	CHANNEL	*channel;
 	int i;
 
-	for(i = 0; i < 256; i++)
+	for(i = 0; i < FILTERS; i++)
 	{
 		filter = &Filters[i];
 
@@ -527,11 +566,11 @@ CTSDemux::DelAllFilters(void)
 		}
 	}
 
-	for(i = 0; i < 256; i++)
+	for(i = 0; i < CHANNELS; i++)
 	{
 		channel = &Channels[i];
 
-		if (channel->ftype == SEC10)
+		if (channel->ftype == MULTI_MPE_FILTER)
 		{
 			if (channel->pid == channel->unkn4A && channel->filter.mac)
 				delete channel->filter.mac;
@@ -545,8 +584,7 @@ CTSDemux::DelAllFilters(void)
 	}
 }
 
-void
-CTSDemux::DeleteChannel(unsigned char chanNo)
+void CTSDemux::DeleteChannel(unsigned char chanNo)
 {
 	CHANNEL *channel;
 
@@ -557,7 +595,7 @@ CTSDemux::DeleteChannel(unsigned char chanNo)
 	channel->pid = 0xffff;
 	channel->unkn4A = 0xffff;
 
-	channel->ftype = 0;
+	channel->ftype = NO_FILTER_TYPE;
 	channel->state = 0;
 	channel->filter.mac = 0;
 
@@ -568,8 +606,7 @@ CTSDemux::DeleteChannel(unsigned char chanNo)
 
 }
 
-void
-CTSDemux::DeleteFilterStruct(unsigned char filterNo)
+void CTSDemux::DeleteFilterStruct(unsigned char filterNo)
 {
 	FILTER	*filter;
 	MACFILTER	*macfilter;
@@ -606,14 +643,13 @@ CTSDemux::DeleteFilterStruct(unsigned char filterNo)
 	filter->macfilter = 0;
 }
 
-unsigned char
-CTSDemux::GetNoOfFilters(void)
+unsigned char CTSDemux::GetNoOfFilters(void)
 {
 	unsigned int	filterNo;
 	unsigned char	count;
 
 	count = 1;
-	for (filterNo = 1; filterNo < 256; filterNo++)
+	for (filterNo = 1; filterNo < FILTERS; filterNo++)
 	{
 		if (Filters[filterNo].chanNo != 0)
 			count++;
@@ -621,8 +657,7 @@ CTSDemux::GetNoOfFilters(void)
 	return count;
 }
 
-void
-CTSDemux::DemuxTS(unsigned char *data, unsigned short len)
+void CTSDemux::DemuxTS(unsigned char *data, unsigned short len)
 {
 	int i;
 	unsigned char *buffer;
@@ -689,8 +724,7 @@ CTSDemux::DemuxTS(unsigned char *data, unsigned short len)
 	}
 }
 
-void
-CTSDemux::ParsTSPack(unsigned char *data, unsigned char chanNo)
+void CTSDemux::ParsTSPack(unsigned char *data, unsigned char chanNo)
 {
 	CHANNEL	*channel;
 
@@ -703,7 +737,9 @@ CTSDemux::ParsTSPack(unsigned char *data, unsigned char chanNo)
 
 	channel->unkn48 = (data[3] >> 6);
 
-	if (channel->ftype >= 7 && channel->ftype <= 9)
+	if (channel->ftype == PID_FILTER ||
+	    channel->ftype == MULTI_PID_FILTER ||
+	    channel->ftype == TS_FILTER)
 	{
 		ParsPID(chanNo, &data[0], 188);
 		return;
@@ -747,22 +783,22 @@ CTSDemux::ParsTSPack(unsigned char *data, unsigned char chanNo)
 
 	switch(channel->ftype)
 	{
-	case ES1:
-	case ES4:
+	case STREAMING_FILTER:
+	case ES_FILTER:
 		ParsES(chanNo, &tmpbuf[0], tmplen);
 		break;
 
-	case PIPE2:
+	case PIPING_FILTER:
 		ParsPipe(chanNo, &tmpbuf[0], tmplen);
 		break;
 
-	case PES3:
+	case PES_FILTER:
 		ParsPES(chanNo, &tmpbuf[0], tmplen);
 		break;
 
-	case SEC5:
-	case SEC6:
-	case SEC10:
+	case SECTION_FILTER:
+	case MPE_SECTION_FILTER:
+	case MULTI_MPE_FILTER:
 		ParsSec(chanNo, &tmpbuf[0], tmplen);
 		break;
 
@@ -771,16 +807,121 @@ CTSDemux::ParsTSPack(unsigned char *data, unsigned char chanNo)
 	}
 }
 
-void
-CTSDemux::ParsPES(unsigned char chanNo, unsigned char *data, unsigned short len)
+void CTSDemux::ParsPES(unsigned char chanNo, unsigned char *data, unsigned short len)
 {
-	/*
-	TODO
-	*/
+#if 0
+	CHANNEL	*channel;
+
+	unsigned char	*tmpbuf;
+	unsigned short	tmplen;
+
+	channel = &Channels[ chanNo ];
+
+	if (Error != 0)	//
+	{
+		FlushPESPack(chanNo);
+	}
+
+	if (PUSI != 0)	//
+	{
+		if (channel->state == 1)
+		{
+			channel->len = 0;
+			channel->buf = channel->basebuf;
+		} else
+		if (channel->state == 5)
+		{
+			NotifyPack(chanNo, &channel->basebuf[0], channel->len, channel->flag);
+
+			channel->flag = 0;
+			channel->state = 1;
+			channel->buf = channel->basebuf;
+			channel->len = 0;
+		} else
+		{
+			FlushPESPack(chanNo);
+		}
+	} else
+	if (channel->state == 1)
+		return;
+
+	if (channel->buf + len > channel->basebuf + channel->baselen)
+	{
+		NotifyPack(chanNo, &channel->basebuf[0], channel->len, channel->flag);
+
+		channel->seclen -= channel->len;
+		channel->len = 0;
+		channel->buf = channel->basebuf;
+		channel->flag = 0;
+	}
+
+	memcpy(&channel->buf[0], &data[0], len);
+	channel->buf += len;
+	channel->len += len;
+
+	tmpbuf = channel->basebuf;
+	tmplen = channel->len;
+
+	switch(channel->state)
+	{
+	case 1:
+		if (tmplen < 3)
+			break;
+
+		if (tmpbuf[0] != 0 ||
+		    tmpbuf[1] != 0 ||
+		    tmpbuf[2] != 1)
+		{
+			FlushPESPack(chanNo);
+			break;
+		}
+
+		channel->flag = 1;
+		channel->state = 2;
+
+	case 2:
+		if (tmplen < 6)
+			break;
+
+		channel->state = 3;
+		channel->seclen = pes_length(tmpbuf);	//((tmpbuf[4] << 8) | tmpbuf[5]) + 6;
+
+	case 3:
+		if (tmplen < 9)
+			break;
+
+		channel->unkn49 = (tmpbuf[6] >> 4) & 3;	//scramble
+
+		if (channel->seclen == 6)
+		{
+			channel->state = 5;
+			break;
+		} else
+		{
+			channel->state = 4;
+		}
+	case 4:
+		if (tmplen < channel->seclen)
+			break;
+
+		if (tmplen == channel->seclen)
+			NotifyPack(chanNo, &tmpbuf[0], tmplen, channel->flag);
+		else
+			FlushPESPack(chanNo);
+
+		channel->flag = 0;
+		channel->state = 1;
+		channel->buf = channel->basebuf;
+
+		break;
+
+	default:
+		break;
+	}
+#endif
 }
 
-void
-CTSDemux::FlushPESPack(unsigned char chanNo)
+void CTSDemux::FlushPESPack(unsigned char chanNo)
 {
 	CHANNEL	*channel;
 
@@ -793,16 +934,138 @@ CTSDemux::FlushPESPack(unsigned char chanNo)
 	channel->flag = 0;
 }
 
-void
-CTSDemux::ParsES(unsigned char chanNo, unsigned char *data, unsigned short len)
+void CTSDemux::ParsES(unsigned char chanNo, unsigned char *data, unsigned short len)
 {
-	/*
-	TODO
-	*/
+#if 0
+	CHANNEL	*channel;
+
+	unsigned char	*tmpbuf;
+	unsigned short	tmplen, tmp1;
+
+	channel = &Channels[ chanNo ];
+
+	if (Error != 0)	//
+	{
+		FlushESPack(chanNo);
+	}
+
+	if (PUSI != 0)	//
+	{
+		if (channel->state == 6)
+		{
+			channel->len = 0;
+			channel->buf = channel->basebuf;
+		} else
+		if (channel->state == 10)
+		{
+			NotifyPack(chanNo, &channel->basebuf[0], channel->len, channel->flag);
+
+			channel->flag = 0;
+			channel->state = 6;
+			channel->buf = channel->basebuf;
+			channel->len = 0;
+		} else
+		{
+			FlushESPack(chanNo);
+		}
+	} else
+	if (channel->state == 6)
+		return;
+
+	if (channel->buf + len > channel->basebuf + channel->baselen)
+	{
+		NotifyPack(chanNo, &channel->basebuf[0], channel->len, channel->flag);
+
+		channel->seclen -= channel->len;
+		channel->len = 0;
+		channel->buf = channel->basebuf;
+		channel->flag = 0;
+	}
+
+	memcpy(&channel->buf[0], &data[0], len);
+	channel->buf += len;
+	channel->len += len;
+
+	tmpbuf = channel->basebuf;
+	tmplen = channel->len;
+
+	switch(channel->state)
+	{
+	case 6:
+		if (tmplen < 3)
+			break;
+
+		if (tmpbuf[0] != 0 ||
+		    tmpbuf[1] != 0 ||
+		    tmpbuf[2] != 1)
+		{
+			FlushESPack(chanNo);
+			break;
+		}
+
+		channel->flag = 1;
+		channel->state = 7;
+
+	case 7:
+		if (tmplen < 6)
+			break;
+
+		channel->state = 8;
+		channel->seclen = pes_length(tmpbuf);	//((tmpbuf[4] << 8) | tmpbuf[5]) + 6;
+
+	case 8:
+		if (tmplen < 9)
+			break;
+
+		channel->unkn49 = (tmpbuf[6] >> 4) & 3;	//scramble
+
+		tmp1 = (tmpbuf[8] + 9);
+
+		if (tmplen < tmp1)
+			break;
+
+		if (channel->seclen == 6)
+		{
+			channel->seclen = 0;
+			channel->len = tmplen - tmp1;
+
+			memmove(&tmpbuf[0], &tmpbuf[ tmp1 ], channel->len);
+
+			channel->buf -= tmp1;
+			channel->state = 10;
+			break;
+		} else
+		{
+			channel->seclen = tmp1;
+			channel->len = tmplen - tmp1;
+
+			memmove(&tmpbuf[0], &tmpbuf[ tmp1 ], channel->len);
+
+			channel->buf -= tmp1;
+			channel->state = 9;
+		}
+	case 9:
+		if (channel->len < channel->seclen)
+			break;
+
+		if (channel->len == channel->seclen)
+			NotifyPack(chanNo, &tmpbuf[0], channel->len, channel->flag);
+		else
+			FlushESPack(chanNo);
+
+		channel->flag = 0;
+		channel->state = 6;
+		channel->buf = channel->basebuf;
+
+		break;
+
+	default:
+		break;
+	}
+#endif
 }
 
-void
-CTSDemux::FlushESPack(unsigned char chanNo)
+void CTSDemux::FlushESPack(unsigned char chanNo)
 {
 	CHANNEL	*channel;
 
@@ -815,8 +1078,7 @@ CTSDemux::FlushESPack(unsigned char chanNo)
 	channel->flag = 0;
 }
 
-void
-CTSDemux::ParsPID(unsigned char chanNo, unsigned char *data, unsigned short len)
+void CTSDemux::ParsPID(unsigned char chanNo, unsigned char *data, unsigned short len)
 {
 	CHANNEL	*channel;
 
@@ -835,8 +1097,7 @@ CTSDemux::ParsPID(unsigned char chanNo, unsigned char *data, unsigned short len)
 	channel->len += len;
 }
 
-void
-CTSDemux::ParsSec(unsigned char chanNo, unsigned char *data, unsigned short len)
+void CTSDemux::ParsSec(unsigned char chanNo, unsigned char *data, unsigned short len)
 {
 	CHANNEL	*channel;
 	unsigned char	pusilen;
@@ -1082,8 +1343,7 @@ CTSDemux::ParsSec(unsigned char chanNo, unsigned char *data, unsigned short len)
 	//
 }
 
-unsigned char
-CTSDemux::CompareSecFilter(unsigned char chanNo, unsigned char *data)
+unsigned char CTSDemux::CompareSecFilter(unsigned char chanNo, unsigned char *data)
 {
 	CHANNEL	*channel;
 	MACFILTER	*macfilter;
@@ -1126,8 +1386,7 @@ CTSDemux::CompareSecFilter(unsigned char chanNo, unsigned char *data)
 	return res;
 }
 
-void
-CTSDemux::FlushSecPack(unsigned char chanNo)
+void CTSDemux::FlushSecPack(unsigned char chanNo)
 {
 	CHANNEL	*channel;
 
@@ -1140,8 +1399,7 @@ CTSDemux::FlushSecPack(unsigned char chanNo)
 	channel->flag = 0;
 }
 
-void
-CTSDemux::ParsPipe(unsigned char chanNo, unsigned char *data, unsigned short len)
+void CTSDemux::ParsPipe(unsigned char chanNo, unsigned char *data, unsigned short len)
 {
 	CHANNEL	*channel;
 
@@ -1174,20 +1432,21 @@ CTSDemux::ParsPipe(unsigned char chanNo, unsigned char *data, unsigned short len
 	channel->len += len;
 }
 
-int
-CTSDemux::NotifyPack(unsigned char chanNo, unsigned char *data, unsigned int len, unsigned char flag)
+int CTSDemux::NotifyPack(unsigned char chanNo, unsigned char *data, unsigned int len, unsigned char flag)
 {
 	unsigned char ftype;
 	unsigned char filterNo;
 
 	ftype = Channels[chanNo].ftype;
 
-	if (ftype == 0)
+	if (ftype == NO_FILTER_TYPE)
 	{
 		return 0;
 	}
 
-	if (ftype == SEC5 || ftype == SEC6 || ftype == SEC10)
+	if (ftype == SECTION_FILTER ||
+	    ftype == MPE_SECTION_FILTER ||
+	    ftype == MULTI_MPE_FILTER)
 	{
 		CHANNEL *channel;
 		MACFILTER *macfilter;
@@ -1231,4 +1490,3 @@ CTSDemux::NotifyPack(unsigned char chanNo, unsigned char *data, unsigned int len
 	}
 	return 0;
 }
-

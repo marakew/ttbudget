@@ -52,8 +52,7 @@ unsigned int const SecCrcTable[256] =
 	0xbcb4666d, 0xb8757bda, 0xb5365d03, 0xb1f740b4,
 };
 
-unsigned int
-SectionCrc(unsigned char *buf, unsigned int len)
+unsigned int SectionCrc(unsigned char *buf, unsigned int len)
 {
 	unsigned int Crc = ~0;
 	int i;
@@ -66,8 +65,7 @@ SectionCrc(unsigned char *buf, unsigned int len)
 	return Crc;
 }
 
-int
-SectionCrcCheck(unsigned char *SecData, unsigned int SecLen)
+int SectionCrcCheck(unsigned char *SecData, unsigned int SecLen)
 {
 	return (SectionCrc(SecData, SecLen) == 0);
 }
@@ -81,8 +79,7 @@ unsigned int const SecCSumMask[] =
 	0xFFFFFF,
 };
 
-void
-SectionCSum(unsigned int *SecCSum, unsigned int *SecData, unsigned int SecLen)
+void SectionCSum(unsigned int *SecCSum, unsigned int *SecData, unsigned int SecLen)
 {
 	unsigned int CSum;
 	unsigned int firstLen, lastLen;
@@ -106,8 +103,7 @@ SectionCSum(unsigned int *SecCSum, unsigned int *SecData, unsigned int SecLen)
 	*SecCSum = CSum;
 }
 
-int
-SectionCSumCheck(unsigned char *SecData, unsigned int SecLen)
+int SectionCSumCheck(unsigned char *SecData, unsigned int SecLen)
 {
 	unsigned int oldCSum, CSum;
 
@@ -130,8 +126,7 @@ SectionCSumCheck(unsigned char *SecData, unsigned int SecLen)
 	return (oldCSum == CSum);
 }
 
-unsigned short
-IP_CSum(unsigned char *IPH, unsigned short iplen)
+unsigned short IP_CSum(unsigned char *IPH, unsigned short iplen)
 {
 	unsigned char *iphdr = IPH;
 
@@ -170,9 +165,7 @@ IP_CSum(unsigned char *IPH, unsigned short iplen)
 	return (~sum);
 }
 
-int
-IP_CSumCheck(unsigned char *iphdr)
+int IP_CSumCheck(unsigned char *iphdr)
 {
 	return (IP_CSum(iphdr, (iphdr[0] & 0xf) << 2) == 0);
 }
-

@@ -50,8 +50,7 @@ devclass_t ttdevclass;
 DRIVER_MODULE(ttbudget, pci, ttdriver, ttdevclass, 0, 0);
 
 
-static int
-ttprobe(device_t dev)
+static int ttprobe(device_t dev)
 {
 	int find;
 	static char subdevice[80];
@@ -111,8 +110,7 @@ ttprobe(device_t dev)
 	return EIO;
 }
 
-static int
-ttattach(device_t dev)
+static int ttattach(device_t dev)
 {
 	CDvbAdapter	*dvb;
 	struct devcallback *dvbdev;
@@ -200,8 +198,7 @@ ttattach(device_t dev)
 	return 0;
 }
 
-static int
-ttdetach(device_t dev)
+static int ttdetach(device_t dev)
 {
 	CDvbAdapter *dvb;
 	struct devcallback *dvbdev;
@@ -216,8 +213,7 @@ ttdetach(device_t dev)
 	return 0;
 }
 
-static int
-ttshutdown(device_t dev)
+static int ttshutdown(device_t dev)
 {
 	CDvbAdapter *dvb;
 	struct devcallback *dvbdev;

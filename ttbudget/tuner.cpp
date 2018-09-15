@@ -35,14 +35,12 @@ CTuner::~CTuner()
 
 }
 
-void
-CTuner::Sleep(unsigned int Milliseconds)
+void CTuner::Sleep(unsigned int Milliseconds)
 {
 	DELAY(Milliseconds * 10);
 }
 
-int
-CTuner::SetTunes(struct tunes *params)
+int CTuner::SetTunes(struct tunes *params)
 {
 	int res;
 	int	freq;
@@ -91,8 +89,7 @@ CTuner::SetTunes(struct tunes *params)
 	return 0;
 }
 
-int
-CTuner::GetTuner(struct tuner *params)
+int CTuner::GetTuner(struct tuner *params)
 {
 	int res;
 
@@ -101,32 +98,27 @@ CTuner::GetTuner(struct tuner *params)
 	bcopy(&state, params, sizeof(state));
 }
 
-void
-CTuner::UpdateStatus(CTuner *tuner)
+void CTuner::UpdateStatus(CTuner *tuner)
 {
 
 }
 
-int
-CTuner::AcquireSignal(void)
+int CTuner::AcquireSignal(void)
 {
 	return 0;
 }
 
-int
-CTuner::Initialize(void)
+int CTuner::Initialize(void)
 {
 	return 0;
 }
 
-int
-CTuner::IsThisTunerInstalled(void)
+int CTuner::IsThisTunerInstalled(void)
 {
 	return 1;
 }
 
-int
-CTuner::GetStatus(fe_status *status, unsigned int *ber, unsigned char *signal)
+int CTuner::GetStatus(fe_status *status, unsigned int *ber, unsigned char *signal)
 {
 	*status = FE_TIMEOUT;
 	*ber = 1;
@@ -135,14 +127,12 @@ CTuner::GetStatus(fe_status *status, unsigned int *ber, unsigned char *signal)
 	return 0;
 }
 
-int
-CTuner::SetLNB(int no, fe_polarity_t polar, fe_tone_t tone)
+int CTuner::SetLNB(int no, fe_polarity_t polar, fe_tone_t tone)
 {
 	return 0;
 }
 
-int
-CTuner::SetTuner(unsigned int freq, unsigned int sr, fe_inner_t inner)
+int CTuner::SetTuner(unsigned int freq, unsigned int sr, fe_inner_t inner)
 {
 	return 0;
 }

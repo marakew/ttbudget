@@ -16,8 +16,7 @@
 
 static int if_num = 0;
 
-void
-net_start(struct ifnet *ifp)
+void net_start(struct ifnet *ifp)
 {
 	struct ifdvb	*dvbp;
 	dvbp = (struct ifdvb *)ifp->if_softc;
@@ -34,8 +33,7 @@ net_start(struct ifnet *ifp)
 	ifp->if_flags &= ~IFF_DRV_OACTIVE;
 }
 
-void
-net_stop(struct ifnet *ifp)
+void net_stop(struct ifnet *ifp)
 {
 	struct ifdvb	*dvbp;
 	dvbp = (struct ifdvb *)ifp->if_softc;
@@ -47,8 +45,7 @@ net_stop(struct ifnet *ifp)
 
 }
 
-int
-if_ioctl(struct ifnet *ifp, unsigned int cmd, caddr_t arg)
+int if_ioctl(struct ifnet *ifp, unsigned int cmd, caddr_t arg)
 {
 	int s, err;
 
@@ -89,20 +86,17 @@ if_ioctl(struct ifnet *ifp, unsigned int cmd, caddr_t arg)
 	return err;
 }
 
-void
-if_watchdog(struct ifnet *ifp)
+void if_watchdog(struct ifnet *ifp)
 {
 
 }
 
-void
-if_start(struct ifnet *ifp)
+void if_start(struct ifnet *ifp)
 {
 
 }
 
-int
-if_output(struct ifnet *ifp,
+int if_output(struct ifnet *ifp,
 		struct mbuf *m,
 		struct sockaddr *sa,
 		struct rtentry *rt)
@@ -111,8 +105,7 @@ if_output(struct ifnet *ifp,
 	return EIO;
 }
 
-void
-if_init(void *arg)
+void if_init(void *arg)
 {
 	struct ifdvb *dvbp;
 	struct ifnet *ifp;
@@ -124,8 +117,7 @@ if_init(void *arg)
 		net_start(ifp);
 }
 
-void
-dvb_ifattach(struct ifdvb *dvbp, unsigned char *eaddr)
+void dvb_ifattach(struct ifdvb *dvbp, unsigned char *eaddr)
 {
 	struct ifnet *ifp;
 
@@ -154,8 +146,7 @@ dvb_ifattach(struct ifdvb *dvbp, unsigned char *eaddr)
 	ether_ifattach(ifp, eaddr);
 }
 
-void
-dvb_ifdetach(struct ifdvb *dvbp)
+void dvb_ifdetach(struct ifdvb *dvbp)
 {
 	struct ifnet *ifp;
 
@@ -168,8 +159,7 @@ dvb_ifdetach(struct ifdvb *dvbp)
 	}
 }
 
-void
-dvb_input(struct ifdvb *dvbp, unsigned char *ipmpe, int len)
+void dvb_input(struct ifdvb *dvbp, unsigned char *ipmpe, int len)
 {
 	struct ifnet *ifp;
 	struct ether_header eh;

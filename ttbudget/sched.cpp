@@ -46,8 +46,7 @@ CSoftScheduler::~CSoftScheduler()
 	}
 }
 
-void
-CSoftScheduler::Schedule(void)
+void CSoftScheduler::Schedule(void)
 {
 	if (softIh != NULL)
 	{

@@ -22,8 +22,7 @@ CDVBDevice::~CDVBDevice()
 		close(handle);
 }
 
-int
-CDVBDevice::Open(int ifnum)
+int CDVBDevice::Open(int ifnum)
 {
 	char name[256];
 
@@ -39,14 +38,12 @@ CDVBDevice::Open(int ifnum)
 	return 1;
 }
 
-int
-CDVBDevice::CallAPI(struct dvbapi *parm)
+int CDVBDevice::CallAPI(struct dvbapi *parm)
 {
 	return ioctl(handle, DVBAPI, parm);
 }
 
-int
-CDVBDevice::AddFilter(unsigned short pid, unsigned char *mac, int mfilter)
+int CDVBDevice::AddFilter(unsigned short pid, unsigned char *mac, int mfilter)
 {
 	int res;
 	struct dvbapi	parm;
@@ -78,8 +75,7 @@ CDVBDevice::AddFilter(unsigned short pid, unsigned char *mac, int mfilter)
 	return res;
 }
 
-int
-CDVBDevice::DelFilter(unsigned char filterNo)
+int CDVBDevice::DelFilter(unsigned char filterNo)
 {
 	int res;
 	struct dvbapi	parm;
@@ -94,8 +90,7 @@ CDVBDevice::DelFilter(unsigned char filterNo)
 	return res;
 }
 
-int
-CDVBDevice::GetFilter(unsigned char filterNo, unsigned short *pid, unsigned char *mac, u_int64_t *bytes, unsigned int *errors)
+int CDVBDevice::GetFilter(unsigned char filterNo, unsigned short *pid, unsigned char *mac, u_int64_t *bytes, unsigned int *errors)
 {
 	int res;
 	struct dvbapi	parm;
@@ -122,8 +117,7 @@ CDVBDevice::GetFilter(unsigned char filterNo, unsigned short *pid, unsigned char
 	return res;
 }
 
-int
-CDVBDevice::GetDMA(unsigned int *status, unsigned int *fullness)
+int CDVBDevice::GetDMA(unsigned int *status, unsigned int *fullness)
 {
 	int res;
 	struct dvbapi	parm;
@@ -139,8 +133,7 @@ CDVBDevice::GetDMA(unsigned int *status, unsigned int *fullness)
 	return res;
 }
 
-int
-CDVBDevice::GetCARD(unsigned int *idSubDevice, unsigned char *mac)
+int CDVBDevice::GetCARD(unsigned int *idSubDevice, unsigned char *mac)
 {
 	int res;
 	struct dvbapi	parm;
@@ -157,8 +150,7 @@ CDVBDevice::GetCARD(unsigned int *idSubDevice, unsigned char *mac)
 	return res;
 }
 
-int
-CDVBDevice::GetDemux(unsigned int *TSPkts, unsigned int *BadTSPkts, unsigned int *DisCont)
+int CDVBDevice::GetDemux(unsigned int *TSPkts, unsigned int *BadTSPkts, unsigned int *DisCont)
 {
 	int res;
 	struct dvbapi	parm;
@@ -175,8 +167,7 @@ CDVBDevice::GetDemux(unsigned int *TSPkts, unsigned int *BadTSPkts, unsigned int
 	return res;
 }
 
-int
-CDVBDevice::ReadTuner(struct tuner *state)
+int CDVBDevice::ReadTuner(struct tuner *state)
 {
 	int res;
 	struct dvbapi	parm;
@@ -191,8 +182,7 @@ CDVBDevice::ReadTuner(struct tuner *state)
 	return res;
 }
 
-int
-CDVBDevice::WriteTuner()
+int CDVBDevice::WriteTuner()
 {
 	int res;
 	struct dvbapi	parm;
@@ -203,4 +193,3 @@ CDVBDevice::WriteTuner()
 
 	return res;
 }
-

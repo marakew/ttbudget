@@ -39,8 +39,7 @@ CFifo::~CFifo()
 	}
 }
 
-int
-CFifo::Init(unsigned int size)
+int CFifo::Init(unsigned int size)
 {
 
 	unsigned char *buffer;
@@ -61,8 +60,7 @@ CFifo::Init(unsigned int size)
 	return 1;
 }
 
-int
-CFifo::IsOK(void)
+int CFifo::IsOK(void)
 {
 	if (pBuffer == NULL)
 		return 0;
@@ -70,15 +68,13 @@ CFifo::IsOK(void)
 	return 1;
 }
 
-void
-CFifo::Reset(void)
+void CFifo::Reset(void)
 {
 	ReadIndex = 0;
 	WriteIndex = 0;
 }
 
-unsigned int
-CFifo::Size(void)
+unsigned int CFifo::Size(void)
 {
 	unsigned int resSize;
 
@@ -105,8 +101,7 @@ CFifo::Size(void)
 	return resSize;
 }
 
-unsigned int
-CFifo::Put(unsigned char *buffer, unsigned int size)
+unsigned int CFifo::Put(unsigned char *buffer, unsigned int size)
 {
 	unsigned int resSize;
 
@@ -176,8 +171,7 @@ CFifo::Put(unsigned char *buffer, unsigned int size)
 	return resSize;
 }
 
-unsigned int
-CFifo::Get(unsigned char *buffer, unsigned int size)
+unsigned int CFifo::Get(unsigned char *buffer, unsigned int size)
 {
 	unsigned int resSize;
 
@@ -245,14 +239,12 @@ CFifo::Get(unsigned char *buffer, unsigned int size)
 	return resSize;
 }
 
-void
-CFifo::Lock(void)
+void CFifo::Lock(void)
 {
 	//mutex.Lock();
 }
 
-void
-CFifo::Unlock(void)
+void CFifo::Unlock(void)
 {
 	//mutex.Unlock();
 }

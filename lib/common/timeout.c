@@ -6,8 +6,7 @@
 
 #include "timeout.h"
 
-void
-SetTimeOut(struct timeval *tv, unsigned int ms)
+void SetTimeOut(struct timeval *tv, unsigned int ms)
 {
 	getmicrotime(tv);
 	tv->tv_usec += ms * 1000;
@@ -22,8 +21,7 @@ SetTimeOut(struct timeval *tv, unsigned int ms)
 
 }
 
-int
-GetTimeOut(struct timeval *tv)
+int GetTimeOut(struct timeval *tv)
 {
 	struct timeval now;
 	int res;
@@ -34,8 +32,7 @@ GetTimeOut(struct timeval *tv)
 	return res;
 }
 
-void
-Sleep(int seconds)
+void Sleep(int seconds)
 {
 	struct timeval now;
 

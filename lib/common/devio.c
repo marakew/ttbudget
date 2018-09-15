@@ -58,8 +58,7 @@ static struct filterops	dvb_write_filterops = {
 	.f_event =	filt_dvbwrite,
 };
 
-void
-dvb_init(struct devcallback *dvbdev, device_t dev)
+void dvb_init(struct devcallback *dvbdev, device_t dev)
 {
 	knlist_init(&dvbdev->kq_sel.si_note, NULL, NULL, NULL, NULL);
 
@@ -75,8 +74,7 @@ dvb_init(struct devcallback *dvbdev, device_t dev)
 	dev_num ++;
 }
 
-void
-dvb_free(struct devcallback *dvbdev)
+void dvb_free(struct devcallback *dvbdev)
 {
 	destroy_dev(dvbdev->dev);
 
@@ -84,8 +82,7 @@ dvb_free(struct devcallback *dvbdev)
 }
 
 
-static int
-dvb_open(struct cdev *dev, int flags, int fmt, struct thread *td)
+static int dvb_open(struct cdev *dev, int flags, int fmt, struct thread *td)
 {
 	struct devcallback *dvbdev;
 	int unit;
@@ -102,8 +99,7 @@ dvb_open(struct cdev *dev, int flags, int fmt, struct thread *td)
 	return 0;
 }
 
-static int
-dvb_close(struct cdev *dev, int flags, int fmt, struct thread *td)
+static int dvb_close(struct cdev *dev, int flags, int fmt, struct thread *td)
 {
 	struct devcallback *dvbdev;
 	int unit;
@@ -120,20 +116,17 @@ dvb_close(struct cdev *dev, int flags, int fmt, struct thread *td)
 	return 0;
 }
 
-static int
-dvb_read(struct cdev *dev, struct uio *uio, int ioflag)
+static int dvb_read(struct cdev *dev, struct uio *uio, int ioflag)
 {
 	return ENXIO;
 }
 
-static int
-dvb_write(struct cdev *dev, struct uio *uio, int ioflag)
+static int dvb_write(struct cdev *dev, struct uio *uio, int ioflag)
 {
 	return ENXIO;
 }
 
-static int
-dvb_ioctl(struct cdev *dev, unsigned long cmd, caddr_t arg, int flag, struct thread *td)
+static int dvb_ioctl(struct cdev *dev, unsigned long cmd, caddr_t arg, int flag, struct thread *td)
 {
 	struct devcallback *dvbdev;
 	int unit;
@@ -175,20 +168,17 @@ dvb_ioctl(struct cdev *dev, unsigned long cmd, caddr_t arg, int flag, struct thr
 	return err;
 }
 
-static int
-dvb_mmap(struct cdev *dev, vm_offset_t offset, vm_paddr_t *paddr, int nprot)
+static int dvb_mmap(struct cdev *dev, vm_offset_t offset, vm_paddr_t *paddr, int nprot)
 {
 	return ENXIO;
 }
 
-static int
-dvb_poll(struct cdev *dev, int events, struct thread *tp)
+static int dvb_poll(struct cdev *dev, int events, struct thread *tp)
 {
 	return ENXIO;
 }
 
-static int
-dvb_kqfilter(struct cdev *dev, struct knote *kn)
+static int dvb_kqfilter(struct cdev *dev, struct knote *kn)
 {
 	int unit;
 	struct devcallback *dvbdev;
@@ -215,24 +205,21 @@ dvb_kqfilter(struct cdev *dev, struct knote *kn)
 	return 0;
 }
 
-static void
-filt_dvbdetach(struct knote *kn)
+static void filt_dvbdetach(struct knote *kn)
 {
 	struct devcallback *dvbdev = kn->kn_hook;
 
 	knlist_remove(&dvbdev->kq_sel.si_note, kn, 0);
 }
 
-static int
-filt_dvbread(struct knote *kn, int hint)
+static int filt_dvbread(struct knote *kn, int hint)
 {
 	struct devcallback *dvbdev = kn->kn_hook;
 
 	return 0;
 }
 
-static int
-filt_dvbwrite(struct knote *kn, int hint)
+static int filt_dvbwrite(struct knote *kn, int hint)
 {
 	struct devcallback *dvbdev = kn->kn_hook;
 

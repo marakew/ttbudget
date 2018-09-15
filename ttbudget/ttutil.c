@@ -4,8 +4,7 @@
 
 #include "ttutil.h"
 
-short
-TTMAC_CRC(unsigned char *mac, short len)
+short TTMAC_CRC(unsigned char *mac, short len)
 {
 	short tmp;
 	short crc;
@@ -34,8 +33,7 @@ TTMAC_CRC(unsigned char *mac, short len)
 	return -1;
 }
 
-short
-TTMAC_DECRYPT(unsigned int *macOID, unsigned int *macL3B, unsigned short *encMAC)
+short TTMAC_DECRYPT(unsigned int *macOID, unsigned int *macL3B, unsigned short *encMAC)
 {
 	unsigned short xored[10] = { 0x2372, 0x1968, 0xA85C, 0x2C71, 0xD354,
 				   0xF17B, 0x239E, 0xF616, 0x361D, 0x7864 };

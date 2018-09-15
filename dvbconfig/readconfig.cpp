@@ -12,8 +12,7 @@
 
 #include "feutil.h"
 
-int
-readconfig(const char *filename, int chan_list, int chan_no, struct tunes *parm)
+int readconfig(const char *filename, int chan_list, int chan_no, struct tunes *parm)
 {
 	FILE *chf;
 	char buf[4096];

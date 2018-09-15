@@ -30,8 +30,7 @@ CTunerSTB0899::~CTunerSTB0899()
 {
 }
 
-int
-CTunerSTB0899::STI2C_Write(int slave ,unsigned char *buf, int len)
+int CTunerSTB0899::STI2C_Write(int slave ,unsigned char *buf, int len)
 {
 	unsigned char tmp[64];
 	int res;
@@ -55,8 +54,7 @@ CTunerSTB0899::STI2C_Write(int slave ,unsigned char *buf, int len)
 	return 0;
 }
 
-int
-CTunerSTB0899::STI2C_Read(int slave, unsigned char *buf, int len)
+int CTunerSTB0899::STI2C_Read(int slave, unsigned char *buf, int len)
 {
 	unsigned char tmp[64];
 	int res;
@@ -82,8 +80,7 @@ CTunerSTB0899::STI2C_Read(int slave, unsigned char *buf, int len)
 	return 0;
 }
 
-int
-CTunerSTB0899::STI2C_Combined(int dir, int slave, unsigned char *buf, int len)
+int CTunerSTB0899::STI2C_Combined(int dir, int slave, unsigned char *buf, int len)
 {
 	int res;
 
@@ -99,8 +96,7 @@ CTunerSTB0899::STI2C_Combined(int dir, int slave, unsigned char *buf, int len)
 	return res;
 }
 
-int
-CTunerSTB0899::CheckLNBP21()
+int CTunerSTB0899::CheckLNBP21()
 {
 	int error;
 	unsigned char val;

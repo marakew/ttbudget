@@ -28,14 +28,12 @@ CMutex::~CMutex()
 {
 }
 
-void
-CMutex::Lock(void)
+void CMutex::Lock(void)
 {
 	//spinlock_enter();
 }
 
-void
-CMutex::Unlock(void)
+void CMutex::Unlock(void)
 {
 	//spinlock_exit();
 }

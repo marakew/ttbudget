@@ -17,14 +17,9 @@ struct ifdvb
 typedef	void (*netFunction)(void *);
 #define	NETFUNC(x)	reinterpret_cast<netFunction>(x)
 
-void
-dvb_ifattach(struct ifdvb *dvbp, unsigned char *eaddr);
-
-void
-dvb_ifdetach(struct ifdvb *dvbp);
-
-void
-dvb_input(struct ifdvb *dvbp, unsigned char *ipmpe, int len);
+void dvb_ifattach(struct ifdvb *dvbp, unsigned char *eaddr);
+void dvb_ifdetach(struct ifdvb *dvbp);
+void dvb_input(struct ifdvb *dvbp, unsigned char *ipmpe, int len);
 
 #endif
 

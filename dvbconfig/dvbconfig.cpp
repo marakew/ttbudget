@@ -20,8 +20,7 @@
 #include "long2str.h"
 #include "feutil.h"
 
-void
-usage(void)
+void usage(void)
 {
 	fprintf(stderr,
 		"usage:\n"
@@ -54,8 +53,7 @@ static struct option longopt[] = {
 	{ NULL, NULL, NULL, NULL},
 };
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int nfopt = -1;
 

@@ -33,8 +33,7 @@ CTunerTDA10086::~CTunerTDA10086()
 {
 }
 
-int
-CTunerTDA10086::SetTunes(struct tunes *params)
+int CTunerTDA10086::SetTunes(struct tunes *params)
 {
 	int res;
 
@@ -45,26 +44,22 @@ CTunerTDA10086::SetTunes(struct tunes *params)
 	return 0;
 }
 
-int
-CTunerTDA10086::ReadSeq(int slave, unsigned char *readBuf, int readLen)
+int CTunerTDA10086::ReadSeq(int slave, unsigned char *readBuf, int readLen)
 {
 	return dvb->I2CReadSeq(slave, readBuf, readLen);
 }
 
-int
-CTunerTDA10086::WriteSeq(int slave, unsigned char *writeBuf, int writeLen)
+int CTunerTDA10086::WriteSeq(int slave, unsigned char *writeBuf, int writeLen)
 {
 	return dvb->I2CWriteSeq(slave, writeBuf, writeLen);
 }
 
-int
-CTunerTDA10086::CombinedSeq(int slave, unsigned char *writeBuf, int writeLen, unsigned char *readBuf, int readLen)
+int CTunerTDA10086::CombinedSeq(int slave, unsigned char *writeBuf, int writeLen, unsigned char *readBuf, int readLen)
 {
 	return dvb->I2CCombinedSeq(slave, writeBuf, writeLen, readBuf, readLen);
 }
 
-int
-CTunerTDA10086::IsThisTunerInstalled(void)
+int CTunerTDA10086::IsThisTunerInstalled(void)
 {
 	unsigned char value;
 	unsigned char DemodID;
@@ -86,8 +81,7 @@ CTunerTDA10086::IsThisTunerInstalled(void)
 	return 1;
 }
 
-int
-CTunerTDA10086::InitTuner(void)
+int CTunerTDA10086::InitTuner(void)
 {
 	int res;
 	unsigned char array[11];
@@ -158,8 +152,7 @@ CTunerTDA10086::InitTuner(void)
 	return 0;
 }
 
-int
-CTunerTDA10086::InitDemod(void)
+int CTunerTDA10086::InitDemod(void)
 {
 	unsigned char array[7];
 	int res;
@@ -344,8 +337,7 @@ CTunerTDA10086::InitDemod(void)
 	return 0;
 }
 
-int
-CTunerTDA10086::Initialize(void)
+int CTunerTDA10086::Initialize(void)
 {
 	unsigned char lnbp21;
 	int res;
@@ -375,8 +367,7 @@ CTunerTDA10086::Initialize(void)
 	return 0;
 }
 
-int
-CTunerTDA10086::GateControl(int enable)
+int CTunerTDA10086::GateControl(int enable)
 {
 	unsigned char	value[2];
 	int res;
@@ -407,8 +398,7 @@ CTunerTDA10086::GateControl(int enable)
 	return 0;
 }
 
-int
-CTunerTDA10086::SetPolarity(fe_polarity_t polar)
+int CTunerTDA10086::SetPolarity(fe_polarity_t polar)
 {
 	unsigned char	value;
 	int res;
@@ -450,8 +440,7 @@ CTunerTDA10086::SetPolarity(fe_polarity_t polar)
 	return 0;
 }
 
-int
-CTunerTDA10086::SetFreq(unsigned int tunerFreq)
+int CTunerTDA10086::SetFreq(unsigned int tunerFreq)
 {
 	int res;
 	unsigned char	array[11];
@@ -510,8 +499,7 @@ CTunerTDA10086::SetFreq(unsigned int tunerFreq)
 	return 0;
 }
 
-int
-CTunerTDA10086::SetViterbiRate(fe_inner_t inner)
+int CTunerTDA10086::SetViterbiRate(fe_inner_t inner)
 {
 	unsigned char value[2];
 	int res;
@@ -563,8 +551,7 @@ CTunerTDA10086::SetViterbiRate(fe_inner_t inner)
 	return 0;
 }
 
-int
-CTunerTDA10086::SetInversion(void)
+int CTunerTDA10086::SetInversion(void)
 {
 	unsigned char	value[2];
 	int res;
@@ -592,8 +579,7 @@ CTunerTDA10086::SetInversion(void)
 	return 0;
 }
 
-int
-CTunerTDA10086::SetSymbolRate(unsigned int sr)
+int CTunerTDA10086::SetSymbolRate(unsigned int sr)
 {
 	unsigned char	value[5];
 
@@ -746,8 +732,7 @@ CTunerTDA10086::SetSymbolRate(unsigned int sr)
 	return 0;
 }
 
-int
-CTunerTDA10086::SetTone(fe_tone_t tone)
+int CTunerTDA10086::SetTone(fe_tone_t tone)
 {
 	unsigned char	value[2];
 	int res;
@@ -791,8 +776,7 @@ CTunerTDA10086::SetTone(fe_tone_t tone)
 	return 0;
 }
 
-int
-CTunerTDA10086::SetLNB(int no, fe_polarity_t polar, fe_tone_t tone)
+int CTunerTDA10086::SetLNB(int no, fe_polarity_t polar, fe_tone_t tone)
 {
 	unsigned int	DiSEqC;
 	int res;
@@ -834,8 +818,7 @@ CTunerTDA10086::SetLNB(int no, fe_polarity_t polar, fe_tone_t tone)
 	return 0;
 }
 
-int
-CTunerTDA10086::SetTuner(unsigned int freq, unsigned int sr, fe_inner_t inner)
+int CTunerTDA10086::SetTuner(unsigned int freq, unsigned int sr, fe_inner_t inner)
 {
 	int res;
 	unsigned char	value[2];
@@ -865,8 +848,7 @@ CTunerTDA10086::SetTuner(unsigned int freq, unsigned int sr, fe_inner_t inner)
 	return 0;
 }
 
-int
-CTunerTDA10086::GetStatus(fe_status_t *status, unsigned int *ber, unsigned char *signal)
+int CTunerTDA10086::GetStatus(fe_status_t *status, unsigned int *ber, unsigned char *signal)
 {
 	unsigned char	value[2];
 	unsigned char	bervalue[3];
@@ -956,8 +938,7 @@ CTunerTDA10086::GetStatus(fe_status_t *status, unsigned int *ber, unsigned char 
 	return 0;
 }
 
-int
-CTunerTDA10086::UpdateGain(void)
+int CTunerTDA10086::UpdateGain(void)
 {
 	int res;
 	unsigned char	value[3];
@@ -1078,8 +1059,7 @@ CTunerTDA10086::UpdateGain(void)
 	return 0;
 }
 
-int
-CTunerTDA10086::DiSEqCMsg(int a, int len, unsigned int cmd)
+int CTunerTDA10086::DiSEqCMsg(int a, int len, unsigned int cmd)
 {
 	int res;
 	unsigned char	value[5];

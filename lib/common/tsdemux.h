@@ -9,16 +9,17 @@ class CAdapter;
 
 enum FILTERTYPE
 {
-	ES1 = 1,
-	PIPE2,
-	PES3,
-	ES4,
-	SEC5,
-	SEC6,
-	PID7,
-	PID8,
-	PID9,
-	SEC10
+	NO_FILTER_TYPE = 0,
+	STREAMING_FILTER = 1,
+	PIPING_FILTER,
+	PES_FILTER,
+	ES_FILTER,
+	SECTION_FILTER,
+	MPE_SECTION_FILTER,
+	PID_FILTER,
+	MULTI_PID_FILTER,
+	TS_FILTER,
+	MULTI_MPE_FILTER
 };
 
 typedef struct PIDCOUNT	
@@ -105,6 +106,15 @@ sec_length(const unsigned char *buf)
 {
         return (3 + ((buf[1] & 0xf) << 8) + buf[2]);
 }
+
+inline unsigned short
+pes_length(const unsigned char *buf)
+{
+	return (6 + ((buf[4] << 8) | buf[5]));
+}
+
+#define FILTERS 256
+#define CHANNELS 256
 
 class CTSDemux
 {

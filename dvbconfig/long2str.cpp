@@ -8,8 +8,7 @@
 #include "long2str.h"
 
 
-char *
-long2str(u_int64_t number)
+char *long2str(u_int64_t number)
 {
 	u_int64_t mants;
 	u_int64_t bytes;

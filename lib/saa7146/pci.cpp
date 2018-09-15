@@ -30,8 +30,7 @@ CSpciIoIrq::~CSpciIoIrq()
 	SetReg(0xDC, 0, 0);
 }
 
-void
-CSpciIoIrq::Init(void)
+void CSpciIoIrq::Init(void)
 {
 	isrnum = 0;
 	spin = 0;
@@ -43,14 +42,12 @@ CSpciIoIrq::Init(void)
 	SetReg(0xDC, 0, 0);
 }
 
-void
-CSpciIoIrq::DeviceReset(void)
+void CSpciIoIrq::DeviceReset(void)
 {
 	SetReg(0xFC, 0x80000000, 1);
 }
 
-unsigned int 
-CSpciIoIrq::GetUploadMask(int reg)
+unsigned int CSpciIoIrq::GetUploadMask(int reg)
 {
 	static unsigned int dwUpMaskTable[40] =
 		{
@@ -133,14 +130,12 @@ CSpciIoIrq::GetUploadMask(int reg)
 	return 0;
 }
 
-void
-CSpciIoIrq::UploadRegs(unsigned int mask)
+void CSpciIoIrq::UploadRegs(unsigned int mask)
 {
 	SetReg(0x100, mask, 0);
 }
 
-unsigned int
-CSpciIoIrq::GetReg(int reg)
+unsigned int CSpciIoIrq::GetReg(int reg)
 {
 	unsigned int value;
 
@@ -168,8 +163,7 @@ CSpciIoIrq::GetReg(int reg)
 	return value;
 }
 
-void
-CSpciIoIrq::SetReg(int reg, unsigned int value, int upload)
+void CSpciIoIrq::SetReg(int reg, unsigned int value, int upload)
 {
 	if (reg >= 0x200)
 	{
@@ -203,8 +197,7 @@ CSpciIoIrq::SetReg(int reg, unsigned int value, int upload)
 
 /* 22KHzLine */
 
-void
-CSpciIoIrq::SetOut22KHzLine(int state)
+void CSpciIoIrq::SetOut22KHzLine(int state)
 {
 	if (state == 0)
 		SetGPIO(3, 0x40);
@@ -212,16 +205,14 @@ CSpciIoIrq::SetOut22KHzLine(int state)
 		SetGPIO(3, 0x50);
 }
 
-int
-CSpciIoIrq::GetOut22HKzLine(void)
+int CSpciIoIrq::GetOut22HKzLine(void)
 {
 	return GetGPIO(3);
 }
 
 /*  ResetLine */
 
-void
-CSpciIoIrq::SetResetLine(int state)
+void CSpciIoIrq::SetResetLine(int state)
 {
 	if (state == 0)
 		SetGPIO(2, 0x40);
@@ -229,16 +220,14 @@ CSpciIoIrq::SetResetLine(int state)
 		SetGPIO(2, 0x50);
 }
 
-int
-CSpciIoIrq::GetResetLine(void)
+int CSpciIoIrq::GetResetLine(void)
 {
 	return GetGPIO(2);
 }
 
 /* GPIO */
 
-void
-CSpciIoIrq::SetGPIO(int gpioPin, int gpioMode)
+void CSpciIoIrq::SetGPIO(int gpioPin, int gpioMode)
 {
 	unsigned int value;
 
@@ -251,8 +240,7 @@ CSpciIoIrq::SetGPIO(int gpioPin, int gpioMode)
 	SetReg(0xE0, value, 1);
 }
 
-int
-CSpciIoIrq::GetGPIO(int gpioPin)
+int CSpciIoIrq::GetGPIO(int gpioPin)
 {
 	if (gpioPin > 3)
 		return 0;
@@ -262,8 +250,7 @@ CSpciIoIrq::GetGPIO(int gpioPin)
 
 /* Irq */
 
-unsigned int
-CSpciIoIrq::EnableIrq(unsigned int irqtype)
+unsigned int CSpciIoIrq::EnableIrq(unsigned int irqtype)
 {
 	irq |= irqtype;
 	SetReg(0x10C, ~GetReg(0xDC) & irqtype, 1);
@@ -271,8 +258,7 @@ CSpciIoIrq::EnableIrq(unsigned int irqtype)
 	return irq;
 }
 
-unsigned int
-CSpciIoIrq::DisableIrq(unsigned int irqtype)
+unsigned int CSpciIoIrq::DisableIrq(unsigned int irqtype)
 {
 	unsigned int tmpirq;
 
@@ -283,8 +269,7 @@ CSpciIoIrq::DisableIrq(unsigned int irqtype)
 	return tmpirq;
 }
 
-void
-CSpciIoIrq::PhysicalEnable(void)
+void CSpciIoIrq::PhysicalEnable(void)
 {
 	if (spin != 0)
 		spin --;
@@ -294,8 +279,7 @@ CSpciIoIrq::PhysicalEnable(void)
 #endif
 }
 
-void
-CSpciIoIrq::PhysicalDisable(void)
+void CSpciIoIrq::PhysicalDisable(void)
 {
 #if 0
 	if (spin == 0)
@@ -304,9 +288,7 @@ CSpciIoIrq::PhysicalDisable(void)
 	spin ++;
 }
 
-
-int
-CSpciIoIrq::RegisterIsr(unsigned int irqtype, void *data, unsigned int isrtype, unsigned short *isrSize, struct ISRTable *isrTable)
+int CSpciIoIrq::RegisterIsr(unsigned int irqtype, void *data, unsigned int isrtype, unsigned short *isrSize, struct ISRTable *isrTable)
 {
 	struct ISRTable *tmpTable;
 
@@ -331,8 +313,7 @@ CSpciIoIrq::RegisterIsr(unsigned int irqtype, void *data, unsigned int isrtype, 
 	return isrnum;
 }
 
-int
-CSpciIoIrq::RegisterRing0Isr(unsigned int irqtype, void *data, unsigned int isrtype)
+int CSpciIoIrq::RegisterRing0Isr(unsigned int irqtype, void *data, unsigned int isrtype)
 {
 	if (irqtype == 0 || (isrtype != 1 && isrtype != 2))
 		return 0;
@@ -340,8 +321,7 @@ CSpciIoIrq::RegisterRing0Isr(unsigned int irqtype, void *data, unsigned int isrt
 	return RegisterIsr(irqtype, data, isrtype, &isrTableSize, &isrTableEntry[0]);
 }
 
-int
-CSpciIoIrq::ScanIsrTable(unsigned int isrnum, unsigned short *isrSize, struct ISRTable *isrTable)
+int CSpciIoIrq::ScanIsrTable(unsigned int isrnum, unsigned short *isrSize, struct ISRTable *isrTable)
 {
 	struct ISRTable *tmpTable, *lastTable;
 	unsigned int irqtype;
@@ -397,8 +377,7 @@ CSpciIoIrq::ScanIsrTable(unsigned int isrnum, unsigned short *isrSize, struct IS
 	return found;
 }
 
-int
-CSpciIoIrq::UnregisterIsr(unsigned int isrnum)
+int CSpciIoIrq::UnregisterIsr(unsigned int isrnum)
 {
 	return ScanIsrTable(isrnum, &isrTableSize, &isrTableEntry[0]);
 }
@@ -406,8 +385,7 @@ CSpciIoIrq::UnregisterIsr(unsigned int isrnum)
 
 /* ----- */
 
-unsigned int
-CSpciIoIrq::CallRing0Isrs(unsigned int irqtype)
+unsigned int CSpciIoIrq::CallRing0Isrs(unsigned int irqtype)
 {
 	struct ISRTable	*isrTable;
 	unsigned int irqmask;
@@ -447,8 +425,7 @@ CSpciIoIrq::CallRing0Isrs(unsigned int irqtype)
 	return irqmask;
 }
 
-int
-CSpciIoIrq::OnHardwareInt(void)
+int CSpciIoIrq::OnHardwareInt(void)
 {
 	unsigned int irqtype;
 	unsigned int irqmask;

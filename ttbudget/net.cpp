@@ -29,20 +29,17 @@ CNetDev::~CNetDev()
 	dvb_ifdetach(&dvbif);
 }
 
-void
-CNetDev::netStart(CNetDev *net)
+void CNetDev::netStart(CNetDev *net)
 {
 	(net->dvb)->HWEnableDataDMA();
 }
 
-void
-CNetDev::netStop(CNetDev *net)
+void CNetDev::netStop(CNetDev *net)
 {
 	(net->dvb)->HWDisableDataDMA();
 }
 
-void
-CNetDev::NetCallback(unsigned char *ipmpe, int len)
+void CNetDev::NetCallback(unsigned char *ipmpe, int len)
 {
 	dvb_input(&dvbif, ipmpe, len);
 }

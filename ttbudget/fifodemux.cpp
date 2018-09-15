@@ -57,8 +57,7 @@ CFifoDemux::~CFifoDemux()
 	}
 }
 
-void
-CFifoDemux::Dump(void)
+void CFifoDemux::Dump(void)
 {
 	printf("FifoDemux\n");
 	printf("lFifoSmallSize: %lu\n", lFifoSmallSize);
@@ -70,8 +69,7 @@ CFifoDemux::Dump(void)
 	lFifoDemuxSize = 0;
 }
 
-int
-CFifoDemux::IsOK(void)
+int CFifoDemux::IsOK(void)
 {
 	if (tsfifo == NULL || tsdemux == NULL)
 		return 0;
@@ -82,8 +80,7 @@ CFifoDemux::IsOK(void)
 	return 1;
 }
 
-void
-CFifoDemux::DemuxFifo(CFifoDemux *fifodemux)
+void CFifoDemux::DemuxFifo(CFifoDemux *fifodemux)
 {
 	int res;
 
@@ -107,8 +104,7 @@ CFifoDemux::DemuxFifo(CFifoDemux *fifodemux)
 	}
 }
 
-int
-CFifoDemux::DequeueFifo(void)
+int CFifoDemux::DequeueFifo(void)
 {
 	unsigned int size;
 	unsigned int getsize;
@@ -140,8 +136,7 @@ CFifoDemux::DequeueFifo(void)
 	return 0;
 }
 
-void
-CFifoDemux::Schedule(void)
+void CFifoDemux::Schedule(void)
 {
 	if (sched != NULL)
 	{

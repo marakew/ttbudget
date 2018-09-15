@@ -33,16 +33,14 @@ CTunerPN1010::~CTunerPN1010()
 {
 }
 
-int
-CTunerPN1010::SetSlave(int slave)
+int CTunerPN1010::SetSlave(int slave)
 {
 	dvb->SetGPIO(3, m_dwGPIO == 0 ? 0x30 : 0);
 
 	return slave;
 }
 
-int
-CTunerPN1010::WriteSeq(int slave, unsigned char *buf, int len)
+int CTunerPN1010::WriteSeq(int slave, unsigned char *buf, int len)
 {
 	int i;
 	int res;
@@ -61,8 +59,7 @@ CTunerPN1010::WriteSeq(int slave, unsigned char *buf, int len)
 	return res;
 }
 
-int
-CTunerPN1010::ReadSeq(int slave, unsigned char *buf, int len)
+int CTunerPN1010::ReadSeq(int slave, unsigned char *buf, int len)
 {
 	int i;
 	int res;
@@ -81,8 +78,7 @@ CTunerPN1010::ReadSeq(int slave, unsigned char *buf, int len)
 	return res;
 }
 
-int
-CTunerPN1010::ReadI2CReg1010(int slave, unsigned char reg, unsigned char *val)
+int CTunerPN1010::ReadI2CReg1010(int slave, unsigned char reg, unsigned char *val)
 {
 	int res;
 	unsigned char tmp;
@@ -103,8 +99,7 @@ CTunerPN1010::ReadI2CReg1010(int slave, unsigned char reg, unsigned char *val)
 	return 0;
 }
 
-int
-CTunerPN1010::WriteI2CReg1010(int slave, unsigned char reg, unsigned char val)
+int CTunerPN1010::WriteI2CReg1010(int slave, unsigned char reg, unsigned char val)
 {
 	int res;
 
@@ -118,8 +113,7 @@ CTunerPN1010::WriteI2CReg1010(int slave, unsigned char reg, unsigned char val)
 	return res;
 }
 
-int
-CTunerPN1010::ReadI2CReg(unsigned char reg)
+int CTunerPN1010::ReadI2CReg(unsigned char reg)
 {
 	unsigned char val;
 
@@ -131,8 +125,7 @@ CTunerPN1010::ReadI2CReg(unsigned char reg)
 	return val;
 }
 
-void
-CTunerPN1010::WriteI2CReg(unsigned char reg, unsigned char val)
+void CTunerPN1010::WriteI2CReg(unsigned char reg, unsigned char val)
 {
 	unsigned char tmp[2];
 

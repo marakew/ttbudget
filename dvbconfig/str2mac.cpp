@@ -5,8 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-int
-str2mac(unsigned char *pMac, char *szMac)
+int str2mac(unsigned char *pMac, char *szMac)
 {
 	if (strlen(szMac) < 12 || strlen(szMac) > 17)
 	{

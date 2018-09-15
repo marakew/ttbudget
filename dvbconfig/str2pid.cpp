@@ -5,8 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-void
-str2pid(const char *szPid, int *piPid)
+void str2pid(const char *szPid, int *piPid)
 {
 	if (strlen(szPid) > 2 &&
 		(strncmp(szPid, "0x", 2) == 0 ||

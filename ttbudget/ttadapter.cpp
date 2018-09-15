@@ -114,8 +114,7 @@ CDvbAdapter::~CDvbAdapter()
 	HWDeInitialize(11);
 }
 
-void
-CDvbAdapter::Dump(void)
+void CDvbAdapter::Dump(void)
 {
 	printf("HWAdapter:\n");
 	printf("HWIRQ %lu\n", HWIRQ);
@@ -140,20 +139,17 @@ CDvbAdapter::Dump(void)
 	fifodemux->Dump();
 }
 
-void
-CDvbAdapter::SetGPIO(int gpioPin, int gpioMode)
+void CDvbAdapter::SetGPIO(int gpioPin, int gpioMode)
 {
 	pci->SetGPIO(gpioPin, gpioMode);
 }
 
-int
-CDvbAdapter::GetGPIO(int gpioPin)
+int CDvbAdapter::GetGPIO(int gpioPin)
 {
 	return pci->GetGPIO(gpioPin);
 }
 
-int
-CDvbAdapter::I2CReadSeq(int slave, unsigned char *readBuf, int readLen)
+int CDvbAdapter::I2CReadSeq(int slave, unsigned char *readBuf, int readLen)
 {
 	int *readbuf;
 	int res;
@@ -184,8 +180,7 @@ CDvbAdapter::I2CReadSeq(int slave, unsigned char *readBuf, int readLen)
 	return res;
 }
 
-int
-CDvbAdapter::I2CWriteSeq(int slave, unsigned char *writeBuf, int writeLen)
+int CDvbAdapter::I2CWriteSeq(int slave, unsigned char *writeBuf, int writeLen)
 {
 	int *writebuf;
 	int res;
@@ -216,8 +211,7 @@ CDvbAdapter::I2CWriteSeq(int slave, unsigned char *writeBuf, int writeLen)
 	return res;
 }
 
-int
-CDvbAdapter::I2CCombinedSeq(int slave,
+int CDvbAdapter::I2CCombinedSeq(int slave,
 	unsigned char *writeBuf, int writeLen, unsigned char *readBuf, int readLen)
 {
 	int *writebuf;
@@ -275,8 +269,7 @@ CDvbAdapter::I2CCombinedSeq(int slave,
 	return res;
 }
 
-int
-CDvbAdapter::CreateTuner(int subdevice)
+int CDvbAdapter::CreateTuner(int subdevice)
 {
 	int res;
 
@@ -323,13 +316,12 @@ CDvbAdapter::CreateTuner(int subdevice)
 	return res;
 }
 
-void
-CDvbAdapter::TSCallback(unsigned char filterType, unsigned char filterNo, unsigned char *data, unsigned int len, unsigned char flag)
+void CDvbAdapter::TSCallback(unsigned char filterType, unsigned char filterNo, unsigned char *data, unsigned int len, unsigned char flag)
 {
 	unsigned short seclen;
 	unsigned short datalen;
 
-	if (filterType == SEC6 || filterType == SEC10)
+	if (filterType == MPE_SECTION_FILTER || filterType == MULTI_MPE_FILTER)
 	{
 		seclen = sec_length(data);
 
@@ -399,7 +391,7 @@ CDvbAdapter::TSCallback(unsigned char filterType, unsigned char filterNo, unsign
 
 endcheck:
 #if 0
-	if (filterType != SEC6 && filterType != SEC10)
+	if (filterType != MPE_SECTION_FILTER && filterType != MULTI_MPE_FILTER)
 	{
 		len -= 28;
 	} else
@@ -414,8 +406,7 @@ endcheck:
 	net->NetCallback(&data[0], len);
 }
 
-void
-CDvbAdapter::HWIsrCallback(unsigned int irqtype, unsigned int isrnum)
+void CDvbAdapter::HWIsrCallback(unsigned int irqtype, unsigned int isrnum)
 {
 	int res;
 	unsigned char *buffer;
@@ -468,8 +459,7 @@ CDvbAdapter::HWIsrCallback(unsigned int irqtype, unsigned int isrnum)
 	IRQCb ++;
 }
 
-int
-CDvbAdapter::HWEnableDataDMA(void)
+int CDvbAdapter::HWEnableDataDMA(void)
 {
 	DMAStatus = 1;
 
@@ -507,8 +497,7 @@ CDvbAdapter::HWEnableDataDMA(void)
 	return 0;
 }
 
-int
-CDvbAdapter::HWDisableDataDMA(void)
+int CDvbAdapter::HWDisableDataDMA(void)
 {
 	pci->SetReg(0xFC, 0x100000, 1);
 
@@ -525,8 +514,7 @@ CDvbAdapter::HWDisableDataDMA(void)
 	return 0;
 }
 
-int
-CDvbAdapter::HWReadMAC(unsigned int *macOID, unsigned int *macL3B)
+int CDvbAdapter::HWReadMAC(unsigned int *macOID, unsigned int *macL3B)
 {
 	int res;
 	unsigned char subaddr;
@@ -554,8 +542,7 @@ CDvbAdapter::HWReadMAC(unsigned int *macOID, unsigned int *macL3B)
 	return 1;
 }
 
-int
-CDvbAdapter::HWInstallInterrupt( void (*ISRHandler)(void *) )
+int CDvbAdapter::HWInstallInterrupt( void (*ISRHandler)(void *) )
 {
 	int rid;
 	int err;
@@ -583,8 +570,7 @@ CDvbAdapter::HWInstallInterrupt( void (*ISRHandler)(void *) )
 	return 0;
 }
 
-void
-CDvbAdapter::HWRemoveInterrupt(void)
+void CDvbAdapter::HWRemoveInterrupt(void)
 {
 
 	if (rih)
@@ -598,8 +584,7 @@ CDvbAdapter::HWRemoveInterrupt(void)
 	}
 }
 
-void
-CDvbAdapter::HWInterruptService(CDvbAdapter  *dvb)
+void CDvbAdapter::HWInterruptService(CDvbAdapter  *dvb)
 {
 	CSpciIoIrq	*pci;
 
@@ -623,9 +608,7 @@ CDvbAdapter::HWInterruptService(CDvbAdapter  *dvb)
 	}
 }
 
-
-int
-CDvbAdapter::HWSetup7146IoSpace(void)
+int CDvbAdapter::HWSetup7146IoSpace(void)
 {
 	int rid;
 
@@ -639,8 +622,7 @@ CDvbAdapter::HWSetup7146IoSpace(void)
 	return 0;
 }
 
-void
-CDvbAdapter::HWRemove7146IoSpace(void)
+void CDvbAdapter::HWRemove7146IoSpace(void)
 {
 	int rid;
 
@@ -652,8 +634,7 @@ CDvbAdapter::HWRemove7146IoSpace(void)
 	}
 }
 
-int
-CDvbAdapter::HWSetupSharedMemory(void)
+int CDvbAdapter::HWSetupSharedMemory(void)
 {
 	dma.size = (188 * 512) * 2;
 	dma.pbuffer = 0;
@@ -671,8 +652,7 @@ CDvbAdapter::HWSetupSharedMemory(void)
 	return 0;
 }
 
-void
-CDvbAdapter::HWRemoveSharedMemory(void)
+void CDvbAdapter::HWRemoveSharedMemory(void)
 {
 	if (dma.vbuffer != NULL)
 	{
@@ -684,8 +664,7 @@ CDvbAdapter::HWRemoveSharedMemory(void)
 	}
 }
 
-void
-CDvbAdapter::HWInit7146Register(int ci)
+void CDvbAdapter::HWInit7146Register(int ci)
 {
 	unsigned int pbuffer;
 
@@ -712,8 +691,7 @@ CDvbAdapter::HWInit7146Register(int ci)
 	pci->SetReg(0x100, 0x7100710, 1);		//MC2
 }
 
-int
-CDvbAdapter::HWDeInitialize(int level)
+int CDvbAdapter::HWDeInitialize(int level)
 {
 	switch(level)
 	{
@@ -799,8 +777,7 @@ CDvbAdapter::HWDeInitialize(int level)
 	return ENXIO;
 }
 
-int
-CDvbAdapter::HWInitialize(int subdevice)
+int CDvbAdapter::HWInitialize(int subdevice)
 {
 	int res;
 
@@ -911,8 +888,7 @@ CDvbAdapter::HWInitialize(int subdevice)
 	return 0;
 }
 
-int
-CDvbAdapter::HWDvbControl(CDvbAdapter *dvb, struct dvbapi *parm)
+int CDvbAdapter::HWDvbControl(CDvbAdapter *dvb, struct dvbapi *parm)
 {
 	CTuner	*tuner = dvb->tuner;
 	CTSDemux *tsdemux = dvb->tsdemux;
@@ -978,7 +954,7 @@ CDvbAdapter::HWDvbControl(CDvbAdapter *dvb, struct dvbapi *parm)
 			unsigned char	filterNo;
 
 			tsdemux->AddFilter(filterNo,
-					SEC6,
+					MPE_SECTION_FILTER,
 					parm->u.filter.pid,
 					&parm->u.filter.mac[0],
 					&parm->u.filter.mask[0],

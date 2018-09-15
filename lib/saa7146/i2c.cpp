@@ -23,16 +23,14 @@ CSpciI2C::~CSpciI2C()
 {
 }
 
-void
-CSpciI2C::Sleep(unsigned int ms)
+void CSpciI2C::Sleep(unsigned int ms)
 {
 	/*
 	TODO
 	*/
 }
 
-void
-CSpciI2C::Init(void)
+void CSpciI2C::Init(void)
 {
 	m_nErrNo = 0;
 	m_wError = 0;
@@ -58,26 +56,22 @@ CSpciI2C::Init(void)
 	m_dwSlave = 0;
 }
 
-int
-CSpciI2C::GetSlave(void)
+int CSpciI2C::GetSlave(void)
 {
 	return m_dwSlave;
 }
 
-void
-CSpciI2C::SetSlave(int slave)
+void CSpciI2C::SetSlave(int slave)
 {
 	m_dwSlave = slave;
 }
 
-int
-CSpciI2C::GetErrNo(void)
+int CSpciI2C::GetErrNo(void)
 {
 	return m_nErrNo;
 }
 
-void
-CSpciI2C::SetIICTRF(int data, unsigned char cmd, unsigned char index)
+void CSpciI2C::SetIICTRF(int data, unsigned char cmd, unsigned char index)
 {
 	unsigned char dataIndex;
 	unsigned char cmdIndex;
@@ -91,15 +85,13 @@ CSpciI2C::SetIICTRF(int data, unsigned char cmd, unsigned char index)
 	m_dwIICTRF |= (cmd & 0xff) << cmdIndex;
 }
 
-void
-CSpciI2C::ClearIICTRF(void)
+void CSpciI2C::ClearIICTRF(void)
 {
 	m_dwIICTRF = 0;
 	m_nIdx = 0;
 }
 
-void
-CSpciI2C::SetBitRate(unsigned short pciSpeed, unsigned short i2cSpeed)
+void CSpciI2C::SetBitRate(unsigned short pciSpeed, unsigned short i2cSpeed)
 {
 	int i;
 	unsigned int dwRate;
@@ -127,8 +119,7 @@ CSpciI2C::SetBitRate(unsigned short pciSpeed, unsigned short i2cSpeed)
 	pci->SetReg(0x90, m_dwStatus, 0);
 }
 
-unsigned short
-CSpciI2C::GetBitRate(void)
+unsigned short CSpciI2C::GetBitRate(void)
 {
 	unsigned int dwRate;
 
@@ -161,8 +152,7 @@ CSpciI2C::GetBitRate(void)
 	return 0;
 }
 
-void
-CSpciI2C::ReadIICTRF(void)
+void CSpciI2C::ReadIICTRF(void)
 {
 	if (m_pRdBuf[0] != NULL)
 	{
@@ -183,8 +173,7 @@ CSpciI2C::ReadIICTRF(void)
 	}
 }
 
-int
-CSpciI2C::CheckIICSTATE(void)
+int CSpciI2C::CheckIICSTATE(void)
 {
 	int error;
 
@@ -210,8 +199,7 @@ CSpciI2C::CheckIICSTATE(void)
 	return 0;
 }
 
-void
-CSpciI2C::FlushIICTRF(void)
+void CSpciI2C::FlushIICTRF(void)
 {
 	int status;
 	struct timeval timeout;
@@ -283,8 +271,7 @@ CSpciI2C::FlushIICTRF(void)
 	Sleep(0);
 }
 
-void
-CSpciI2C::AddIICTRF(int *data, unsigned char cmd, int res)
+void CSpciI2C::AddIICTRF(int *data, unsigned char cmd, int res)
 {
 	m_pRdBuf[m_nIdx] = (res == 1) ? data : 0;// NULL;
 
@@ -299,8 +286,7 @@ CSpciI2C::AddIICTRF(int *data, unsigned char cmd, int res)
 	}
 }
 
-int
-CSpciI2C::ReadSeq(int *readBuf, int readLen)
+int CSpciI2C::ReadSeq(int *readBuf, int readLen)
 {
 	int slave;
 	int errNo;
@@ -331,8 +317,7 @@ CSpciI2C::ReadSeq(int *readBuf, int readLen)
 	return m_wError;
 }
 
-int
-CSpciI2C::WriteSeq(int *writeBuf, int writeLen)
+int CSpciI2C::WriteSeq(int *writeBuf, int writeLen)
 {
 	int slave;
 	int errNo;
@@ -362,8 +347,7 @@ CSpciI2C::WriteSeq(int *writeBuf, int writeLen)
 	return m_wError;
 }
 
-int
-CSpciI2C::CombinedSeq(int *writeBuf, int writeLen, int *readBuf, int readLen)
+int CSpciI2C::CombinedSeq(int *writeBuf, int writeLen, int *readBuf, int readLen)
 {
 	int slave;
 	int errNo;
@@ -407,27 +391,22 @@ CSpciI2C::CombinedSeq(int *writeBuf, int writeLen, int *readBuf, int readLen)
 	return m_wError;
 }
 
-void
-CSpciI2C::Stop(void)
+void CSpciI2C::Stop(void)
 {
 }
 
-int
-CSpciI2C::StartR(void)
+int CSpciI2C::StartR(void)
 {
 }
 
-int
-CSpciI2C::StartW(void)
+int CSpciI2C::StartW(void)
 {
 }
 
-int
-CSpciI2C::WriteByte(int)
+int CSpciI2C::WriteByte(int)
 {
 }
 
-int
-CSpciI2C::ReadByte(int)
+int CSpciI2C::ReadByte(int)
 {
 }
